@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2022-01-21 23:03+0200\n"
+"PO-Revision-Date: 2022-01-29 04:29+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: plugins\Bots\PyrogramBot\handlers.py:124
+#: plugins\Bots\PyrogramBot\handlers.py:158
+#: plugins\Bots\PyrogramBot\handlers.py:174
+msgid "I am not in voice channel (/join)"
+msgstr "Я не в голосовом канале (/join)"
+
+#: plugins\Bots\PyrogramBot\handlers.py:131
+msgid "Audio resumed"
+msgstr "Аудио возобновлено"
+
+#: plugins\Bots\PyrogramBot\handlers.py:136
+msgid "Audio paused"
+msgstr "Аудио приостановлено"
+
+#: plugins\Bots\PyrogramBot\handlers.py:143
+msgid "Video resumed"
+msgstr "Видео возобновлено"
+
+#: plugins\Bots\PyrogramBot\handlers.py:148
+msgid "Video paused"
+msgstr "Видео приостановлено"
+
+#: plugins\Bots\PyrogramBot\handlers.py:152
+#: plugins\Bots\PyrogramBot\handlers.py:163
+#: plugins\Bots\PyrogramBot\handlers.py:380
+#: plugins\Bots\PyrogramBot\handlers.py:393
+#: plugins\Bots\PyrogramBot\handlers.py:463
+#: plugins\Bots\PyrogramBot\handlers.py:477
+msgid "Media is not playing"
+msgstr "Мультимедиа не воспроизводится"
+
+#: plugins\Bots\PyrogramBot\handlers.py:168
+msgid "Media skip"
+msgstr "Пропуск мультимедиа"
+
+#: plugins\Bots\PyrogramBot\handlers.py:179
+msgid "Thank you for kicking me out"
+msgstr "Спасибо, что выгнали меня"
+
+#: plugins\Bots\PyrogramBot\handlers.py:206
+#: plugins\Bots\PyrogramBot\handlers.py:252
+#: plugins\Bots\PyrogramBot\handlers.py:300
+msgid "Media queue is empty"
+msgstr "Очередь мультимедиа пуста"
+
+#: plugins\Bots\PyrogramBot\handlers.py:236
+#: plugins\Bots\PyrogramBot\handlers.py:329
+msgid "added  by"
+msgstr "добавил(а)"
+
+#: plugins\Bots\PyrogramBot\handlers.py:246
+#: plugins\Bots\PyrogramBot\handlers.py:338
+#: plugins\Bots\PyrogramBot\handlers.py:344
+msgid "media queue"
+msgstr "очередь мультимедиа"
+
+#: plugins\Bots\PyrogramBot\handlers.py:346
+msgid "Empty page"
+msgstr "Пустая страница"
+
+#: plugins\Bots\PyrogramBot\handlers.py:427
+msgid "Now playing"
+msgstr "Сейчас воспроизводится"
+
+#: plugins\Bots\PyrogramBot\handlers.py:428
+#: plugins\Bots\PyrogramBot\handlers.py:743
+msgid "Title"
+msgstr "Название"
+
+#: plugins\Bots\PyrogramBot\handlers.py:430
+#: plugins\Bots\PyrogramBot\handlers.py:745
+msgid "Uploader"
+msgstr "Загрузчик"
+
+#: plugins\Bots\PyrogramBot\handlers.py:432
+#: plugins\Bots\PyrogramBot\handlers.py:747
+msgid "Duration"
+msgstr "Длительность"
+
+#: plugins\Bots\PyrogramBot\handlers.py:434
+#: plugins\Bots\PyrogramBot\handlers.py:749
+msgid "Added by"
+msgstr "Добавил(а)"
+
+#: plugins\Bots\PyrogramBot\handlers.py:464
+msgid "Use /lyrics [song title] instead"
+msgstr "Используй /lyrics [название]"
+
+#: plugins\Bots\PyrogramBot\handlers.py:498
+msgid "Lyrics not found"
+msgstr "Слова песни не найдены"
+
+#: plugins\Bots\PyrogramBot\handlers.py:529
+msgid "Media queue cleared"
+msgstr "Очередь мультимедиа очищена"
+
+#: plugins\Bots\PyrogramBot\handlers.py:543
+msgid "track(s) cleared"
+msgstr "трек(ов) очищено"
+
+#: plugins\Bots\PyrogramBot\handlers.py:560
+msgid "I need manage voice permission"
+msgstr "Мне нужно управление голосовыми разрешениями"
+
+#: plugins\Bots\PyrogramBot\handlers.py:566
+msgid "Successfully connected to voice channel"
+msgstr "Успешно подключен к голосовому каналу"
+
+#: plugins\Bots\PyrogramBot\handlers.py:570
+msgid "I am already in voice channel"
+msgstr "Я уже в голосовом канале"
+
+#: plugins\Bots\PyrogramBot\handlers.py:588
+msgid "Successfully added to queue"
+msgstr "Успешно добавлено в очередь"
+
+#: plugins\Bots\PyrogramBot\handlers.py:601
+msgid "I need to be in voice channel (/join)"
+msgstr "Мне нужно быть в голосовом канале (/join)"
+
+#: plugins\Bots\PyrogramBot\handlers.py:659
+msgid "Media load failed"
+msgstr "Сбой загрузки мультимедиа"
+
+#: plugins\Bots\PyrogramBot\handlers.py:708
+msgid "Audio playout failed"
+msgstr "Сбой воспроизведения звука"
+
+#: plugins\Bots\PyrogramBot\handlers.py:717
+msgid "Video playout failed"
+msgstr "Ошибка при попытке видео воспроизведения"
+
+#: plugins\Bots\PyrogramBot\handlers.py:721
+msgid "Media playout failed"
+msgstr "Ошибка при попытке мультимедиа воспроизведения"
+
+#: plugins\Bots\PyrogramBot\handlers.py:742
+msgid "Playing from queue"
+msgstr "Воспроизведение из очереди"
+
+#: plugins\Bots\PyrogramBot\handlers.py:879
+msgid "Message does not contain voice message"
+msgstr "Сообщение не содержит голосового сообщения"
+
+#: plugins\Bots\PyrogramBot\handlers.py:901
+msgid "Speech Recognition Error"
+msgstr "Ошибка распознавания речи"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1004
+msgid "No messages in"
+msgstr "Нет сообщений в"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1011
+msgid "Random"
+msgstr "Случайное"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1012
+msgid "message"
+msgstr "сообщение"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1022
+msgid "No stats found about"
+msgstr "Не найдено информации о"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1055
+#: plugins\Bots\PyrogramBot\handlers.py:1123
+msgid "xp"
+msgstr "опыт"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1057
+#: plugins\Bots\PyrogramBot\handlers.py:1125
+msgid "messages"
+msgstr "сообщений"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1059
+#: plugins\Bots\PyrogramBot\handlers.py:1127
+msgid "voice time"
+msgstr "время в голосовом канале"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1062
+#: plugins\Bots\PyrogramBot\handlers.py:1135
+msgid "xp per message"
+msgstr "опыта за сообщение"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1064
+#: plugins\Bots\PyrogramBot\handlers.py:1137
+msgid "xp per voice second"
+msgstr "опыта за секунду в голосовом канале"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1064
+#: plugins\Bots\PyrogramBot\handlers.py:1137
+msgid "xp per voice minute"
+msgstr "опыта за минуту в голосовом канале"
+
+#: plugins\Bots\PyrogramBot\handlers.py:1110
+msgid "Top members of"
+msgstr "Топ участников"
