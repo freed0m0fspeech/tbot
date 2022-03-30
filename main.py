@@ -35,10 +35,10 @@ async def main():
 
     PYROGRAM_API_ID = os.getenv('PYROGRAM_API_ID')
     PYROGRAM_API_HASH = os.getenv('PYROGRAM_API_HASH')
-    
+
     GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
     GOOGLE_ENGINE_ID = os.getenv('GOOGLE_ENGINE_ID')
-    
+
     TWITCH_APP_ID = os.getenv('TWITCH_APP_ID')
     TWITCH_APP_SECRET = os.getenv('TWITCH_APP_SECRET')
 
@@ -56,7 +56,8 @@ async def main():
 
     # aiogramBot = AiogramBot(token=TOKEN, webhook_path=WEBHOOK_PATH_AIOGRAM, webhook_url=WEBHOOK_URL_AIOGRAM)
 
-    pyrogramBot = PyrogramBot(api_id=PYROGRAM_API_ID, api_hash=PYROGRAM_API_HASH, bot_token=TOKEN, user_session=USER_SESSION)
+    pyrogramBot = PyrogramBot(api_id=PYROGRAM_API_ID, api_hash=PYROGRAM_API_HASH, bot_token=TOKEN,
+                              user_session=USER_SESSION)
 
     # twitch = Twitch(TWITCH_APP_ID, TWITCH_APP_SECRET)
     # event_sub = EventSub(callback_url=WEBHOOK_URL_TWITCH, api_client_id=twitch.app_id, twitch=twitch)
