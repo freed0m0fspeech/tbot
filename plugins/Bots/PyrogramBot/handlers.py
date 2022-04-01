@@ -4,6 +4,8 @@ import gettext
 import math
 import os
 import random
+
+import pyrogram
 import speech_recognition
 import time
 import youtube_dl
@@ -70,7 +72,7 @@ class PyrogramBotHandler:
         chat_member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
 
         if not chat_member.status == 'creator':
-            #TODO print message
+            # TODO print message
             return
 
         try:
@@ -132,7 +134,8 @@ class PyrogramBotHandler:
     async def pause_command(self, client: Client, message: types.Message):
         if not self.groupCall.client.is_connected:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✖️{text}".format(text=_("I am not in voice channel (/join)"))
+                                                           text="✖️{text}".format(
+                                                               text=_("I am not in voice channel (/join)"))
                                                            )
         else:
             if self.groupCall.client.is_audio_running:
@@ -160,13 +163,15 @@ class PyrogramBotHandler:
                                                                        )
                 else:
                     return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                                   text="✖️{text}".format(text=_("Media is not playing"))
+                                                                   text="✖️{text}".format(
+                                                                       text=_("Media is not playing"))
                                                                    )
 
     async def skip_command(self, client: Client, message: types.Message):
         if not self.groupCall.client.is_connected:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✖️{text}".format(text=_("I am not in voice channel (/join)"))
+                                                           text="✖️{text}".format(
+                                                               text=_("I am not in voice channel (/join)"))
                                                            )
 
         if not self.groupCall.client.is_audio_running and not self.groupCall.client.is_video_running:
@@ -182,7 +187,8 @@ class PyrogramBotHandler:
     async def leave_command(self, client: Client, message: types.Message):
         if not self.groupCall.client.is_connected:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✖️{text}".format(text=_("I am not in voice channel (/join)"))
+                                                           text="✖️{text}".format(
+                                                               text=_("I am not in voice channel (/join)"))
                                                            )
 
         await self.groupCall.client.leave()
@@ -241,7 +247,7 @@ class PyrogramBotHandler:
                 if user_object.id == user_id:
                     user_mention = f"[@{user_object.username}](tg://user?id={user_object.id})"
 
-                    #query = f"({i + 1 + (page - 1) * 10}) `{text}` {_('added by')} {user_mention}"
+                    # query = f"({i + 1 + (page - 1) * 10}) `{text}` {_('added by')} {user_mention}"
                     query = "({element}) `{text}` {added_by} {user_mention}".format(element=i + 1 + (page - 1) * 10,
                                                                                     text=text,
                                                                                     added_by=_("added  by"),
@@ -253,10 +259,11 @@ class PyrogramBotHandler:
         if queries:
             queries = '\n'.join(queries)
             # text_reply = f"{message.chat.title} {_('media queue')} ({queue_count}):\n\n{queries}"
-            text_reply = "{chat_title} {media_queue} ({queue_count}):\n\n{queries}".format(chat_title=message.chat.title,
-                                                                                           media_queue=_("media queue"),
-                                                                                           queue_count=queue_count,
-                                                                                           queries=queries)
+            text_reply = "{chat_title} {media_queue} ({queue_count}):\n\n{queries}".format(
+                chat_title=message.chat.title,
+                media_queue=_("media queue"),
+                queue_count=queue_count,
+                queries=queries)
         else:
             # empy page
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -334,7 +341,7 @@ class PyrogramBotHandler:
             for user_object in users_objects:
                 if user_object.id == user_id:
                     user_mention = f"[@{user_object.username}](tg://user?id={user_object.id})"
-                    #query = f"({i + 1 + (page - 1) * 10}) `{text}` {_('added by')} {user_mention}"
+                    # query = f"({i + 1 + (page - 1) * 10}) `{text}` {_('added by')} {user_mention}"
                     query = "({element}) `{text}` {added_by} {user_mention}".format(element=i + 1 + (page - 1) * 10,
                                                                                     text=text,
                                                                                     added_by=_("added  by"),
@@ -344,17 +351,19 @@ class PyrogramBotHandler:
 
         if queries:
             queries = '\n'.join(queries)
-            #text_reply = f"{message.chat.title} {_('media queue')} ({queue_count}):\n\n{queries}"
-            text_reply = "{chat_title} {media_queue} ({queue_count}):\n\n{queries}".format(chat_title=message.chat.title,
-                                                                                           media_queue=_("media queue"),
-                                                                                           queue_count=queue_count,
-                                                                                           queries=queries)
+            # text_reply = f"{message.chat.title} {_('media queue')} ({queue_count}):\n\n{queries}"
+            text_reply = "{chat_title} {media_queue} ({queue_count}):\n\n{queries}".format(
+                chat_title=message.chat.title,
+                media_queue=_("media queue"),
+                queue_count=queue_count,
+                queries=queries)
         else:
-            #text_reply = f"{message.chat.title} {_('media queue')} ({queue_count}):\n\n{_('Empty page')}"
-            text_reply = "{chat_title} {media_queue} ({queue_count}):\n\n{queries}".format(chat_title=message.chat.title,
-                                                                                           media_queue=_("media queue"),
-                                                                                           queue_count=queue_count,
-                                                                                           queries=_("Empty page"))
+            # text_reply = f"{message.chat.title} {_('media queue')} ({queue_count}):\n\n{_('Empty page')}"
+            text_reply = "{chat_title} {media_queue} ({queue_count}):\n\n{queries}".format(
+                chat_title=message.chat.title,
+                media_queue=_("media queue"),
+                queue_count=queue_count,
+                queries=_("Empty page"))
 
         count_of_buttons = min(10, math.ceil(queue_count / 10))
 
@@ -425,7 +434,7 @@ class PyrogramBotHandler:
         channel = f"[{now['uploader']}]({now['uploader_url']})"
         user_mention = f"[@{user.username}](tg://user?id={now['user']})"
 
-        #text_reply = f"{_('Now playing')}\n" \
+        # text_reply = f"{_('Now playing')}\n" \
         #             f"{_('Title')}: {title}\n" \
         #             f"{_('Uploader')}: {channel}\n" \
         #             f"{_('Duration')}: {duration}\n" \
@@ -471,8 +480,9 @@ class PyrogramBotHandler:
         else:
             if not self.groupCall.client.is_audio_running and not self.groupCall.client.is_video_running:
                 return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                               text="✖️{text}\n{tip}".format(text=_("Media is not playing"),
-                                                                                                tip=_("Use /lyrics [song title] instead"))
+                                                               text="✖️{text}\n{tip}".format(
+                                                                   text=_("Media is not playing"),
+                                                                   tip=_("Use /lyrics [song title] instead"))
                                                                )
 
             query = {'media.now': 1}
@@ -551,7 +561,8 @@ class PyrogramBotHandler:
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{count} {tracks_cleared}".format(count=abs(count),
-                                                                                                      tracks_cleared=_("track(s) cleared"))
+                                                                                                    tracks_cleared=_(
+                                                                                                        "track(s) cleared"))
                                                            )
 
     async def join_command(self, client: Client, message: types.Message):
@@ -568,17 +579,20 @@ class PyrogramBotHandler:
                     await self.groupCall.client.join(group=message.chat.id)
                 except errors.ChatAdminRequired:
                     await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                            text="✖️{text}".format(text=_("I need manage voice permission"))
+                                                            text="✖️{text}".format(
+                                                                text=_("I need manage voice permission"))
                                                             )
 
                     return False
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✔️{text}".format(text=_("Successfully connected to voice channel"))
+                                                           text="✔️{text}".format(
+                                                               text=_("Successfully connected to voice channel"))
                                                            )
         else:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✖️{text}".format(text=_("I am already in voice channel"))
+                                                           text="✖️{text}".format(
+                                                               text=_("I am already in voice channel"))
                                                            )
 
     async def play_command(self, client: Client, message: types.Message):
@@ -609,7 +623,8 @@ class PyrogramBotHandler:
 
         if not self.groupCall.client.is_connected:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✖️{text}".format(text=_("I need to be in voice channel (/join)"))
+                                                           text="✖️{text}".format(
+                                                               text=_("I need to be in voice channel (/join)"))
                                                            )
             # await self.join_command(client=client, message=message)
 
@@ -716,7 +731,8 @@ class PyrogramBotHandler:
                         await self.groupCall.client.start_audio(source=info['url'], repeat=False)
                     except Exception:
                         return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                                       text="✖️{text}".format(text=_("Audio playout failed"))
+                                                                       text="✖️{text}".format(
+                                                                           text=_("Audio playout failed"))
                                                                        )
                 else:
                     if info.get('ext') in self.groupCall.video_formats:
@@ -725,11 +741,13 @@ class PyrogramBotHandler:
                                                                     enable_experimental_lip_sync=lip_sync)
                         except Exception:
                             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                                           text="✖️{text}".format(text=_("Video playout failed"))
+                                                                           text="✖️{text}".format(
+                                                                               text=_("Video playout failed"))
                                                                            )
                     else:
                         return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                                       text="✖️{text}".format(text=_("Media playout failed"))
+                                                                       text="✖️{text}".format(
+                                                                           text=_("Media playout failed"))
                                                                        )
 
                 user = await self.pyrogramBot.bot.get_users(now['user'])
@@ -740,7 +758,7 @@ class PyrogramBotHandler:
                 channel = f"[{now['uploader']}]({now['uploader_url']})"
                 user_mention = f"[@{user.username}](tg://user?id={now['user']})"
 
-                #text_reply = f"{_('Playing from queue')}\n" \
+                # text_reply = f"{_('Playing from queue')}\n" \
                 #             f"{_('Title')}: {title}\n" \
                 #             f"{_('Uploader')}: {channel}\n" \
                 #             f"{_('Duration')}: {duration}\n" \
@@ -888,7 +906,8 @@ class PyrogramBotHandler:
 
         if not message.reply_to_message or not message.reply_to_message.voice:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                           text="✖️{text}".format(text=_("Message does not contain voice message"))
+                                                           text="✖️{text}".format(
+                                                               text=_("Message does not contain voice message"))
                                                            )
 
         file_id = message.reply_to_message.voice.file_id
@@ -1013,16 +1032,17 @@ class PyrogramBotHandler:
                     random_message: types.Message
                 except ValueError:
                     return await self.pyrogramBot.bot.send_message(chat_id=chat.id,
-                                                                   text="✖️{text} {chat_title}".format(text=_("No messages in"),
-                                                                                                         chat_title=chat.title)
+                                                                   text="✖️{text} {chat_title}".format(
+                                                                       text=_("No messages in"),
+                                                                       chat_title=chat.title)
                                                                    )
 
                 link = random_message.link
                 return await self.pyrogramBot.bot.send_message(
                     chat_id=chat.id,
                     text="✔️{random_text} [{message_text}]({link})".format(random_text=_("Random"),
-                                                                            message_text=_("message"),
-                                                                            link=link)
+                                                                           message_text=_("message"),
+                                                                           link=link)
                 )
             else:
                 user_name = query
@@ -1031,8 +1051,9 @@ class PyrogramBotHandler:
                 user = await self.pyrogramBot.bot.get_users(user_name)
             except (errors.UsernameInvalid, errors.PeerIdInvalid):
                 return await self.pyrogramBot.bot.send_message(chat_id=chat.id,
-                                                               text="✖️{text} {user_name}".format(text=_("No stats found about"),
-                                                                                                    user_name=user_name)
+                                                               text="✖️{text} {user_name}".format(
+                                                                   text=_("No stats found about"),
+                                                                   user_name=user_name)
                                                                )
 
             query = {'_id': 0, f'users.{user.id}.stats': 1}
@@ -1063,19 +1084,20 @@ class PyrogramBotHandler:
             return await self.pyrogramBot.bot.send_message(
                 chat_id=chat.id,
                 text="{user_mention} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}\n\n"
-                     "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}".format(user_mention=user_mention,
-                                                                                                         xp_text=_("xp"),
-                                                                                                         xp=round(xp),
-                                                                                                         messages_text=_("messages"),
-                                                                                                         messages_count=messages_count,
-                                                                                                         voice_time_text=_("voice time"),
-                                                                                                         voice_time=date,
-                                                                                                         message_xp=message_xp,
-                                                                                                         xp_per_messaage_text=_("xp per message"),
-                                                                                                         voice_xp=voice_xp,
-                                                                                                         xp_per_voice_second_text=_("xp per voice minute"))
+                     "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}".format(
+                    user_mention=user_mention,
+                    xp_text=_("xp"),
+                    xp=round(xp),
+                    messages_text=_("messages"),
+                    messages_count=messages_count,
+                    voice_time_text=_("voice time"),
+                    voice_time=date,
+                    message_xp=message_xp,
+                    xp_per_messaage_text=_("xp per message"),
+                    voice_xp=voice_xp,
+                    xp_per_voice_second_text=_("xp per voice minute"))
 
-                #text=f"{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n\n"
+                # text=f"{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n\n"
                 #     f"({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
             )
         except IndexError:
@@ -1139,7 +1161,7 @@ class PyrogramBotHandler:
                     voice_time_text=_("voice time"),
                     voice_time=date)
 
-                #top_list = f"{top_list}{i}.{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n"
+                # top_list = f"{top_list}{i}.{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n"
 
             top_list = "{top_list}\n\n{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}".format(
                 top_list=top_list,
@@ -1147,7 +1169,7 @@ class PyrogramBotHandler:
                 xp_per_messaage_text=_("xp per message"),
                 voice_xp=voice_xp,
                 xp_per_voice_second_text=_("xp per voice minute"))
-            #top_list = f"{top_list}\n\n({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
+            # top_list = f"{top_list}\n\n({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
 
             return await self.pyrogramBot.bot.send_message(chat_id=chat.id, text=top_list, disable_notification=True)
 
@@ -1200,6 +1222,35 @@ class PyrogramBotHandler:
 
         # (client.get_chat_member(userid)).status - member admin permissions
 
+        # APRIL FOOLS --------------------------------------------------------------------------------------------------
+        if isinstance(update, raw_types.UpdateNewChannelMessage):
+            update: raw_types.UpdateNewChannelMessage
+            # self.pyrogramBot.bot: pyrogram.Client
+
+            try:
+                # chat = list(chats.items())[0][1]
+                # chat_id = -1000000000000 - chat.id
+                # user = list(users.items())[0][1]
+
+                if random.randint(1, 10) == 1:
+                    # print(1)
+                    chat_id = -1000000000000 - update.message.peer_id.channel_id
+                    message_id = update.message.id
+                    emoji = "🎉🔥🤮🤯👍👎💩🤩😱😁🤬😢🥰👏❤🤔"
+                    # "️"
+                    # print(message_id, chat_id, update)
+
+                    # print(message_id, chat_id, update)
+                    await self.pyrogramBot.user.send_reaction(chat_id=chat_id,
+                                                              message_id=message_id,
+                                                              emoji=random.choice(emoji))
+            except Exception:
+                return
+
+        # chat_member = await self.pyrogramBot.bot.get_chat_member(chat_id=chat_id, user_id='me')
+
+        # --------------------------------------------------------------------------------------------------------------
+
         # TODO add handle of another update types
         # TODO make log file of the day or after some time
 
@@ -1219,13 +1270,14 @@ class PyrogramBotHandler:
                     query = {f'call_id': update.call.id}
 
                     return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
-                                                           filter={'chat_id': -1000000000000-update.chat_id},
+                                                           filter={'chat_id': -1000000000000 - update.chat_id},
                                                            query=query)
             except AttributeError:
                 query = {f'call_id': 1}
 
                 return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
-                                                       action='$unset', filter={'chat_id': -1000000000000-update.chat_id},
+                                                       action='$unset',
+                                                       filter={'chat_id': -1000000000000 - update.chat_id},
                                                        query=query)
 
                 # query = {f'call_id': update.call.id}
