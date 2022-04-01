@@ -1212,6 +1212,9 @@ class PyrogramBotHandler:
     # ------------------------------------------------------------------------------------------------------------------
 
     async def raw_update_handler(self, client: Client, update: base.Update, users: dict, chats: dict):
+        """
+        Raw Updates Handler
+
         # MIN_CHANNEL_ID = -1002147483647
         # MAX_CHANNEL_ID = -1000000000000
         # MIN_CHAT_ID = -2147483647
@@ -1219,10 +1222,12 @@ class PyrogramBotHandler:
         # MAX_USER_ID = 999999999999
 
         # MAX - ID = NEW ID
+        """
 
         # (client.get_chat_member(userid)).status - member admin permissions
 
         # APRIL FOOLS --------------------------------------------------------------------------------------------------
+        """
         if isinstance(update, raw_types.UpdateNewChannelMessage):
             update: raw_types.UpdateNewChannelMessage
             # self.pyrogramBot.bot: pyrogram.Client
@@ -1251,7 +1256,7 @@ class PyrogramBotHandler:
                         return print(e)
 
         # chat_member = await self.pyrogramBot.bot.get_chat_member(chat_id=chat_id, user_id='me')
-
+        """
         # --------------------------------------------------------------------------------------------------------------
 
         # TODO add handle of another update types
