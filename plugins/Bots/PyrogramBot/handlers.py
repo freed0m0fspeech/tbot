@@ -1241,13 +1241,15 @@ class PyrogramBotHandler:
                     # print(message_id, chat_id, update)
 
                     # print(message_id, chat_id, update)
-                    await self.pyrogramBot.user.send_reaction(chat_id=chat_id,
-                                                              message_id=message_id,
-                                                              emoji=random.choice(emoji))
-            except errors.FloodWait as e:
-                time.sleep(e.x)
-            except Exception as e:
-                print(e)
+            flag = True
+            while flag:
+                try:
+                    if await self.pyrogramBot.user.send_reaction(chat_id=chat_id, message_id=message_id, emoji=random.choice(emoji)):
+                        flag = False
+                except errors.FloodWait as e:
+                    await asyncio.sleep(e.x)
+                except Exception as e:
+                    return print(e)
 
         # chat_member = await self.pyrogramBot.bot.get_chat_member(chat_id=chat_id, user_id='me')
 
