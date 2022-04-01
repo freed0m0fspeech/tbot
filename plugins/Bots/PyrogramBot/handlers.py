@@ -1227,25 +1227,24 @@ class PyrogramBotHandler:
             update: raw_types.UpdateNewChannelMessage
             # self.pyrogramBot.bot: pyrogram.Client
 
-            try:
-                # chat = list(chats.items())[0][1]
-                # chat_id = -1000000000000 - chat.id
-                # user = list(users.items())[0][1]
+            # chat = list(chats.items())[0][1]
+            # chat_id = -1000000000000 - chat.id
+            # user = list(users.items())[0][1]
 
-                if random.randint(1, 4) == 1:
-                    # print(1)
-                    chat_id = -1000000000000 - update.message.peer_id.channel_id
-                    message_id = update.message.id
-                    emoji = "🎉🔥🤮🤯👍👎💩🤩😱😁🤬😢🥰👏❤🤔"
-                    # "️"
-                    # print(message_id, chat_id, update)
+            if random.randint(1, 4) == 1:
+                # print(1)
+                chat_id = -1000000000000 - update.message.peer_id.channel_id
+                message_id = update.message.id
+                emoji = "🎉🔥🤮🤯👍👎💩🤩😱😁🤬😢🥰👏❤🤔"
+                # "️"
+                # print(message_id, chat_id, update)
 
-                    # print(message_id, chat_id, update)
-            flag = True
-            while flag:
+                # print(message_id, chat_id, update)
+
+            while True:
                 try:
                     if await self.pyrogramBot.user.send_reaction(chat_id=chat_id, message_id=message_id, emoji=random.choice(emoji)):
-                        flag = False
+                        return
                 except errors.FloodWait as e:
                     await asyncio.sleep(e.x)
                 except Exception as e:
