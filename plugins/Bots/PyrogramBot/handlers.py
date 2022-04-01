@@ -1232,7 +1232,7 @@ class PyrogramBotHandler:
                 # chat_id = -1000000000000 - chat.id
                 # user = list(users.items())[0][1]
 
-                if random.randint(1, 10) == 1:
+                if random.randint(1, 4) == 1:
                     # print(1)
                     chat_id = -1000000000000 - update.message.peer_id.channel_id
                     message_id = update.message.id
