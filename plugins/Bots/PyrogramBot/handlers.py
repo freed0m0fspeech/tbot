@@ -1244,8 +1244,10 @@ class PyrogramBotHandler:
                     await self.pyrogramBot.user.send_reaction(chat_id=chat_id,
                                                               message_id=message_id,
                                                               emoji=random.choice(emoji))
-            except Exception:
-                return
+            except errors.FloodWait as e:
+                time.sleep(e.x)
+            except Exception as e:
+                print(e)
 
         # chat_member = await self.pyrogramBot.bot.get_chat_member(chat_id=chat_id, user_id='me')
 
