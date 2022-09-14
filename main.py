@@ -23,12 +23,14 @@ async def main():
 
     # ------------------------------------------------------------------------------------------------------------------
 
-    TOKEN = os.environ['TOKEN']
+    # https://telegram-bot-freed0m0fspeech.fly.dev/
+
+    TOKEN = os.getenv('TOKEN')
     # HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
     MONGODATABASE_USER = os.getenv('MONGODATABASE_USER')
     MONGODATABASE_PASSWORD = os.getenv('MONGODATABASE_PASSWORD')
-    MONGODATABASE_HOST = os.getenv('MONGODATABASE_HOST')
+    MONGODATABASE_HOST = f"{os.getenv('MONGODATABASE_HOST')}?retryWrites=true&w=majority"
 
     USER_SESSION = os.getenv('USER_SESSION')
     # BOT_SESSION = os.getenv('BOT_SESSION')
