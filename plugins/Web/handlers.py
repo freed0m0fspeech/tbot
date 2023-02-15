@@ -183,22 +183,22 @@ class WebServerHandler:
         #     return Response(status=422)
 
         try:
-            member = await self.pyrogramBot.bot.get_chat_member(chat, user)
-            user = member.user
-            chat = member.chat
+            member = await self.pyrogramBot.user.get_chat_member(chat, user)
+            chat = await self.pyrogramBot.user.get_chat(chat)
+            user = await self.pyrogramBot.user.get_users(user)
         except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
             member = None
             user = None
             chat = None
 
-        if not member:
+        if not member or not user or not chat:
             return Response(status=422)
 
         query = ""
         query_filter = MessagesFilter.EMPTY
 
         # Search only for userbots
-        messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat, from_user=user, query=query,
+        messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id, query=query,
                                                                            filter=query_filter)
 
         message_xp = 100
@@ -268,7 +268,7 @@ class WebServerHandler:
         user = request.match_info['user']
 
         try:
-            user = await self.pyrogramBot.bot.get_users(user)
+            user = await self.pyrogramBot.user.get_users(user)
         except (errors.UsernameInvalid, errors.PeerIdInvalid, errors.UserInvalid):
             user = None
 
@@ -313,7 +313,7 @@ class WebServerHandler:
         chat = request.match_info['chat']
 
         try:
-            chat = await self.pyrogramBot.bot.get_chat(chat)
+            chat = await self.pyrogramBot.user.get_chat(chat)
         except (errors.ChatInvalid, errors.PeerIdInvalid):
             chat = None
 
