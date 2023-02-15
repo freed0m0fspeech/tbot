@@ -184,8 +184,12 @@ class WebServerHandler:
 
         try:
             member = await self.pyrogramBot.bot.get_chat_member(chat, user)
+            user = member.user
+            chat = member.chat
         except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
             member = None
+            user = None
+            chat = None
 
         if not member:
             return Response(status=422)
@@ -203,7 +207,7 @@ class WebServerHandler:
 
         query = {'_id': 0, f'users.{user.id}.stats': 1}
         document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
-                                              filter={'chat_id': chat.id}, query=query)
+                                                   filter={'chat_id': chat.id}, query=query)
 
         try:
             stats = document['users'][f'{user.id}']['stats']
@@ -233,7 +237,7 @@ class WebServerHandler:
             # 'chat': member.chat,
             'joined_date': json.dumps(member.joined_date, default=json_util.default),
             'custom_title': member.custom_title,
-            'until_date': json.dumps(member.until_date, default=json_util.default), # banned until date
+            'until_date': json.dumps(member.until_date, default=json_util.default),  # banned until date
             # 'invited_by': member.invited_by,
             # 'promoted_by': member.promoted_by,
             # 'restricted_by': member.restricted_by,
@@ -251,12 +255,12 @@ class WebServerHandler:
             'hours_in_voice_channel': hours_in_voice_channel,
             'member_parameters': member_parameters,
         }
-            # 'user': user.username,
-            # 'chat.title': chat.title,
-            # 'chat.members_count': chat.members_count,
-            # 'member.joined_date': json.dumps(member.joined_date, default=json_util.default),
-            # 'member.messages_count': messages_count,
-            # 'member.custom_title': member.custom_title,
+        # 'user': user.username,
+        # 'chat.title': chat.title,
+        # 'chat.members_count': chat.members_count,
+        # 'member.joined_date': json.dumps(member.joined_date, default=json_util.default),
+        # 'member.messages_count': messages_count,
+        # 'member.custom_title': member.custom_title,
 
         return json_response(response)
 
