@@ -4,6 +4,7 @@ WebServerHandler plugin to work with Handler
 import json
 import os
 from json import dumps
+from math import sqrt
 
 from bson import json_util
 from pyrogram.enums import MessagesFilter
@@ -196,6 +197,36 @@ class WebServerHandler:
         messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat, from_user=user, query=query,
                                                                            filter=query_filter)
 
+        message_xp = 100
+        voice_xp = 50
+        xp_factor = 100  # threshold
+
+        query = {'_id': 0, f'users.{user.id}.stats': 1}
+        document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
+                                              filter={'chat_id': chat.id}, query=query)
+
+        try:
+            stats = document['users'][f'{user.id}']['stats']
+
+            seconds = 0.0
+            for voicetime in stats['voicetime']:
+                seconds += voicetime
+
+            seconds = round(seconds)
+        except(IndexError, KeyError, TypeError):
+            seconds = 0
+
+        hours_in_voice_channel = round(seconds / 3600, 1)
+        xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
+
+        lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
+        lvl = int(lvl) - 1
+
+        xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
+
+        xp_have = int(xp - xp_for_level)
+        xp_need = (lvl + 1) * xp_factor
+
         member_parameters = {
             # 'status': member.status,
             # 'user': member.user,
@@ -214,6 +245,10 @@ class WebServerHandler:
 
         response = {
             'messages_count': messages_count,
+            'lvl': lvl,
+            'xp_have': xp_have,
+            'xp_need': xp_need,
+            'hours_in_voice_channel': hours_in_voice_channel,
             'member_parameters': member_parameters,
         }
             # 'user': user.username,
