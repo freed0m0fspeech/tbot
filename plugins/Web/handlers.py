@@ -1,12 +1,16 @@
 """
 WebServerHandler plugin to work with Handler
 """
+import json
 import os
+from json import dumps
 
+from bson import json_util
+from pyrogram.enums import MessagesFilter
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler, InlineQueryHandler, ChosenInlineResultHandler, \
     RawUpdateHandler
-from pyrogram import filters
-from aiohttp.web import Response, Request
+from pyrogram import filters, errors
+from aiohttp.web import Response, Request, json_response
 
 from plugins.Bots.AiogramBot.handlers import AiogramBotHandler
 from plugins.Bots.PyrogramBot.handlers import PyrogramBotHandler
@@ -51,6 +55,12 @@ class WebServerHandler:
     def __register_routes(self):
         self.webServer.client.router.add_route('GET', '/', self.__default_handler)
         self.webServer.client.router.add_route('POST', '/', self.__default_handler)
+        self.webServer.client.router.add_route('POST', '/member/{chat:[^\\/]+}/{user:[^\\/]+}',
+                                               self.__member_parameters_handler)
+        self.webServer.client.router.add_route('POST', '/user/{user:[^\\/]+}',
+                                               self.__user_parameters_handler)
+        self.webServer.client.router.add_route('POST', '/chat/{chat:[^\\/]+}',
+                                               self.__chat_parameters_handler)
 
     # Aiogram ----------------------------------------------------------------------------------------------------------
     def __register_handlers_aiogramBot(self):
@@ -90,7 +100,8 @@ class WebServerHandler:
             # filter_chat_type = getattr(filters, chat_type)
 
             self.pyrogramBot.bot.add_handler(
-                InlineQueryHandler(callback=callback, filters=filters.regex(rf'/{command}.*')) #filters.command(f'{command}'))
+                InlineQueryHandler(callback=callback, filters=filters.regex(rf'/{command}.*'))
+                # filters.command(f'{command}'))
             )
 
         for command, chat_type in self.pyrogramBot.CallbackQueryHandlerCommands.items():
@@ -152,6 +163,160 @@ class WebServerHandler:
 
     async def __default_handler(self, request: 'Request'):
         return Response(text="I'm Web handler")
+
+    async def __member_parameters_handler(self, request: 'Request'):
+        user = request.match_info['user']
+        # chat_id = request.match_info['chat_id']
+        chat = request.match_info['chat']
+
+        # try:
+        #     user = await self.pyrogramBot.user.get_users(user)
+        #     chat = await self.pyrogramBot.user.get_chat(chat)
+        #     member = await self.pyrogramBot.user.get_chat_member(chat.id, user.id)
+        # except (errors.UsernameInvalid, errors.PeerIdInvalid, errors.ChatInvalid):
+        #     user = None
+        #     chat = None
+        #     member = None
+        #
+        # if not user or not chat or not member:
+        #     return Response(status=422)
+
+        try:
+            member = await self.pyrogramBot.bot.get_chat_member(chat, user)
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
+            member = None
+
+        if not member:
+            return Response(status=422)
+
+        query = ""
+        query_filter = MessagesFilter.EMPTY
+
+        # Search only for userbots
+        messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat, from_user=user, query=query,
+                                                                           filter=query_filter)
+
+        member_parameters = {
+            # 'status': member.status,
+            # 'user': member.user,
+            # 'chat': member.chat,
+            'joined_date': json.dumps(member.joined_date, default=json_util.default),
+            'custom_title': member.custom_title,
+            'until_date': json.dumps(member.until_date, default=json_util.default), # banned until date
+            # 'invited_by': member.invited_by,
+            # 'promoted_by': member.promoted_by,
+            # 'restricted_by': member.restricted_by,
+            'is_member': member.is_member,
+            'can_be_edited': member.can_be_edited,
+            # 'permissions': member.permissions,
+            # 'privileges', member.privileges,
+        }
+
+        response = {
+            'messages_count': messages_count,
+            'member_parameters': member_parameters,
+        }
+            # 'user': user.username,
+            # 'chat.title': chat.title,
+            # 'chat.members_count': chat.members_count,
+            # 'member.joined_date': json.dumps(member.joined_date, default=json_util.default),
+            # 'member.messages_count': messages_count,
+            # 'member.custom_title': member.custom_title,
+
+        return json_response(response)
+
+    async def __user_parameters_handler(self, request: 'Request'):
+        user = request.match_info['user']
+
+        try:
+            user = await self.pyrogramBot.bot.get_users(user)
+        except (errors.UsernameInvalid, errors.PeerIdInvalid, errors.UserInvalid):
+            user = None
+
+        if not user:
+            return Response(status=422)
+
+        user_parameters = {
+            'id': user.id,
+            'is_self': user.is_self,
+            'is_contact': user.is_contact,
+            'is_mutual_contact': user.is_mutual_contact,
+            'is_deleted': user.is_deleted,
+            'is_bot': user.is_bot,
+            'is_verified': user.is_verified,
+            'is_restricted': user.is_restricted,
+            'is_scam': user.is_scam,
+            'is_fake': user.is_fake,
+            'is_support': user.is_support,
+            'is_premium': user.is_premium,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            # 'status': user.status,
+            'last_online_date': json.dumps(user.last_online_date, default=json_util.default),
+            'next_offline_date': json.dumps(user.next_offline_date, default=json_util.default),
+            'username': user.username,
+            'language_code': user.language_code,
+            # 'emoji_status': user.emoji_status,
+            'dc_id': user.dc_id,
+            'phone_number': user.phone_number,
+            # 'photo': user.photo,
+            # 'restrictions': user.restrictions,
+            'mention': user.mention,
+        }
+
+        response = {
+            'user_parameters': user_parameters,
+        }
+
+        return json_response(response)
+
+    async def __chat_parameters_handler(self, request: 'Request'):
+        chat = request.match_info['chat']
+
+        try:
+            chat = await self.pyrogramBot.bot.get_chat(chat)
+        except (errors.ChatInvalid, errors.PeerIdInvalid):
+            chat = None
+
+        if not chat:
+            return Response(status=422)
+
+        chat_parameters = {
+            'id': chat.id,
+            # 'type': chat.type,
+            'is_verified': chat.is_verified,
+            'is_restricted': chat.is_restricted,
+            'is_creator': chat.is_creator,
+            'is_scam': chat.is_scam,
+            'is_fake': chat.is_fake,
+            'is_support': chat.is_support,
+            'title': chat.title,
+            'username': chat.username,
+            'first_name': chat.first_name,
+            'last_name': chat.last_name,
+            # 'photo': chat.photo,
+            'bio': chat.bio,
+            'description': chat.description,
+            'dc_id': chat.dc_id,
+            'has_protected_content': chat.has_protected_content,
+            'invite_link': chat.invite_link,
+            # 'pinned_message': chat.pinned_message,
+            'sticker_set_name': chat.sticker_set_name,
+            'can_set_sticker_set': chat.can_set_sticker_set,
+            'members_count': chat.members_count,
+            # 'restrictions': chat.restrictions,
+            # 'permissions': chat.permissions,
+            'distance': chat.distance,
+            # 'linked_chat': chat.linked_chat,
+            # 'send_as_chat': chat.send_as_chat,
+            # 'available_reactions': chat.available_reactions,
+        }
+
+        response = {
+            'chat_parameters': chat_parameters,
+        }
+
+        return json_response(response)
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------

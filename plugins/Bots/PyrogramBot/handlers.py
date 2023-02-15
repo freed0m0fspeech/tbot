@@ -11,6 +11,8 @@ import time
 import youtube_dl
 
 from datetime import timedelta
+
+from pyrogram.enums import MessagesFilter, ParseMode, ChatType
 from pyrogram.raw import types as raw_types
 from pyrogram.raw.functions import phone
 from pyrogram import types
@@ -575,7 +577,7 @@ class PyrogramBotHandler:
                                                                                        access_hash=peer.access_hash),
                                                        random_id=int(self.pyrogramBot.bot.rnd_id()) // 9000000000)
                 try:
-                    await self.pyrogramBot.user.send(startGroupCall)
+                    await self.pyrogramBot.user.invoke(startGroupCall)
                     await self.groupCall.client.join(group=message.chat.id)
                 except errors.ChatAdminRequired:
                     await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -866,7 +868,7 @@ class PyrogramBotHandler:
                 results.append(types.InlineQueryResultArticle(
                     title=f"{duration} {res['title']}",
                     input_message_content=types.InputTextMessageContent(message_text=message_text,
-                                                                        parse_mode='markdown',
+                                                                        parse_mode=ParseMode.MARKDOWN,
                                                                         disable_web_page_preview=True),
                     url=res['webpage_url'],
                     description=res['uploader'],
@@ -985,7 +987,7 @@ class PyrogramBotHandler:
         os.remove(converted_source)
 
         if text:
-            if message.chat.type in ('group', 'supergroup', 'channel'):
+            if message.chat.type in (ChatType.GROUP, ChatType.SUPERGROUP, ChatType.CHANNEL):
                 link = message.reply_to_message.link
 
                 await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -1023,13 +1025,11 @@ class PyrogramBotHandler:
 
                 try:
                     # get history onlu for user bots
-                    random_message = await self.pyrogramBot.user.get_history(
-                        chat_id=chat.id,
-                        offset=random.randint(0, max_value),
-                        limit=1
-                    )
-                    random_message = random_message[0]
-                    random_message: types.Message
+                    async for random_message in self.pyrogramBot.user.get_chat_history(chat_id=chat.id,
+                                                                                       offset=random.randint(0,
+                                                                                                             max_value),
+                                                                                       limit=1):
+                        random_message = random_message
                 except ValueError:
                     return await self.pyrogramBot.bot.send_message(chat_id=chat.id,
                                                                    text="✖️{text} {chat_title}".format(
@@ -1071,7 +1071,7 @@ class PyrogramBotHandler:
                 seconds = 0
 
             query = ""
-            query_filter = "empty"
+            query_filter = MessagesFilter.EMPTY
 
             # Search only for userbots
             messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id,
@@ -1106,10 +1106,10 @@ class PyrogramBotHandler:
                                                        filter={'chat_id': chat.id}, query=query)
 
             query = ""
-            query_filter = "empty"
+            query_filter = MessagesFilter.EMPTY
 
             stats = []
-            async for member in self.pyrogramBot.user.iter_chat_members(chat_id=chat.id):
+            async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
                 messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id,
                                                                                    from_user=member.user.id,
                                                                                    query=query, filter=query_filter)
@@ -1132,6 +1132,7 @@ class PyrogramBotHandler:
                 stat = (user, messages_count, seconds, xp)
                 stats.append(stat)
 
+            # sort data by id=3 value - xp
             stats.sort(reverse=True, key=lambda x: x[3])
 
             # [0:10:2]  # start 0, stop: 10, step:2

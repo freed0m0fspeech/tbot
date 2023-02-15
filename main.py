@@ -44,7 +44,8 @@ async def main():
     TWITCH_APP_ID = os.getenv('TWITCH_APP_ID')
     TWITCH_APP_SECRET = os.getenv('TWITCH_APP_SECRET')
 
-    WEBAPP_HOST = '0.0.0.0'
+    # no host specified in headers or uri fix http://
+    WEBAPP_HOST = 'http://0.0.0.0'
     WEBAPP_PORT = int(os.getenv('PORT', '5000'))
 
     # ------------------------------------------------------------------------------------------------------------------

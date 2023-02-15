@@ -1,6 +1,7 @@
 """
 Web plugin to work with Web
 """
+import asyncio
 import gettext
 
 from aiohttp import web
@@ -12,7 +13,7 @@ from plugins.Twitch.twitch import Twitch
 from plugins.Twitch.eventsub import EventSub
 from plugins.DataBase.mongo import MongoDataBase
 from plugins.Google.google import Google
-from pyrogram.errors import exceptions
+from pyrogram.errors import exceptions, FloodWait
 
 
 class WebServer:
@@ -83,8 +84,10 @@ class WebServer:
 
             try:
                 await self.pyrogramBot.bot.start()
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+                await self.pyrogramBot.bot.start()
             except ConnectionError:
-                # TODO connection error
                 pass
 
             await self.pyrogramBot.set_default_commands()
@@ -105,7 +108,7 @@ class WebServer:
         if self.eventSub:
             self.eventSub.unsubscribe_all_known()
 
-        await self.pyrogramBot.bot.send_message(chat_id=365867152, text="Offline")
+        # await self.pyrogramBot.bot.send_message(chat_id=365867152, text="Offline")
 
         if self.pyrogramBot:
             try:
