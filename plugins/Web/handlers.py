@@ -55,11 +55,11 @@ class WebServerHandler:
     def __register_routes(self):
         self.webServer.client.router.add_route('GET', '/', self.__default_handler)
         self.webServer.client.router.add_route('POST', '/', self.__default_handler)
-        self.webServer.client.router.add_route('POST', '/member/{chat:[^\\/]+}/{user:[^\\/]+}',
+        self.webServer.client.router.add_route('GET', '/member/{chat:[^\\/]+}/{user:[^\\/]+}',
                                                self.__member_parameters_handler)
-        self.webServer.client.router.add_route('POST', '/user/{user:[^\\/]+}',
+        self.webServer.client.router.add_route('GET', '/user/{user:[^\\/]+}',
                                                self.__user_parameters_handler)
-        self.webServer.client.router.add_route('POST', '/chat/{chat:[^\\/]+}',
+        self.webServer.client.router.add_route('GET', '/chat/{chat:[^\\/]+}',
                                                self.__chat_parameters_handler)
 
     # Aiogram ----------------------------------------------------------------------------------------------------------
