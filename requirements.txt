@@ -19,3 +19,4 @@ tgcrypto~=1.2.3
 SpeechRecognition~=3.8.1
 youtube_dl~=2021.12.17
 requests-html~=0.10.0
+python-dotenv==0.21.1
