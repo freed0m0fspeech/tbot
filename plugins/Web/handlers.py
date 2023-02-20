@@ -174,7 +174,7 @@ class WebServerHandler:
         return Response(text="I'm Web handler")
 
     async def __send_message_handler(self, request: 'Request'):
-        if request.headers.get('referer', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
+        if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
             return Response(status=403)
 
         chat = request.match_info['chat']
@@ -194,7 +194,7 @@ class WebServerHandler:
         return Response()
 
     async def __member_parameters_handler(self, request: 'Request'):
-        if request.headers.get('referer', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
+        if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
             return Response(status=403)
 
         user = request.match_info['user']
@@ -297,7 +297,7 @@ class WebServerHandler:
         return json_response(response)
 
     async def __user_parameters_handler(self, request: 'Request'):
-        if request.headers.get('referer', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
+        if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
             return Response(status=403)
 
         user = request.match_info['user']
@@ -345,7 +345,7 @@ class WebServerHandler:
         return json_response(response)
 
     async def __chat_parameters_handler(self, request: 'Request'):
-        if request.headers.get('referer', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
+        if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
             return Response(status=403)
 
         chat = request.match_info['chat']
