@@ -171,11 +171,10 @@ class WebServerHandler:
     # ------------------------------------------------------------------------------------------------------------------
 
     async def __default_handler(self, request: 'Request'):
-        print(request.host)
         return Response(text="I'm Web handler")
 
     async def __send_message_handler(self, request: 'Request'):
-        if request.host not in ALLOWED_HOSTS:
+        if request.headers.get('referer', '') not in ALLOWED_HOSTS:
             return Response(status=403)
 
         chat = request.match_info['chat']
@@ -193,9 +192,9 @@ class WebServerHandler:
             )
 
         return Response()
+
     async def __member_parameters_handler(self, request: 'Request'):
-        print(request.host)
-        if request.host not in ALLOWED_HOSTS:
+        if request.headers.get('referer', '') not in ALLOWED_HOSTS:
             return Response(status=403)
 
         user = request.match_info['user']
@@ -230,7 +229,8 @@ class WebServerHandler:
         query_filter = MessagesFilter.EMPTY
 
         # Search only for userbots
-        messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id, query=query,
+        messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id,
+                                                                           query=query,
                                                                            filter=query_filter)
 
         message_xp = 100
@@ -297,7 +297,7 @@ class WebServerHandler:
         return json_response(response)
 
     async def __user_parameters_handler(self, request: 'Request'):
-        if request.host not in ALLOWED_HOSTS:
+        if request.headers.get('referer', '') not in ALLOWED_HOSTS:
             return Response(status=403)
 
         user = request.match_info['user']
