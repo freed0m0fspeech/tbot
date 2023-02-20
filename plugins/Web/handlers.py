@@ -171,6 +171,7 @@ class WebServerHandler:
     # ------------------------------------------------------------------------------------------------------------------
 
     async def __default_handler(self, request: 'Request'):
+        print(request.host)
         return Response(text="I'm Web handler")
 
     async def __send_message_handler(self, request: 'Request'):
@@ -193,6 +194,7 @@ class WebServerHandler:
 
         return Response()
     async def __member_parameters_handler(self, request: 'Request'):
+        print(request.host)
         if request.host not in ALLOWED_HOSTS:
             return Response(status=403)
 
