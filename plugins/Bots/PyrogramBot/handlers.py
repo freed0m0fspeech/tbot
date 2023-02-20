@@ -147,7 +147,7 @@ class PyrogramBotHandler:
             except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
                 return
 
-            if member.custom_title.lower() == 'judge':
+            if member.custom_title.lower() == 'судья':
                 await self.pyrogramBot.bot.restrict_chat_member(chat_id=message.chat.id,
                                                                 user_id=user.id,
                                                                 permissions=ChatPermissions(),
