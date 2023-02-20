@@ -186,6 +186,11 @@ msgstr "Не найдено информации о"
 msgid "xp"
 msgstr "опыт"
 
+#: plugins\Bots\PyrogramBot\handlers.py:1055
+#: plugins\Bots\PyrogramBot\handlers.py:1123
+msgid "lvl"
+msgstr "уровень"
+
 #: plugins\Bots\PyrogramBot\handlers.py:1057
 #: plugins\Bots\PyrogramBot\handlers.py:1125
 msgid "messages"

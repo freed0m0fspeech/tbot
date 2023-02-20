@@ -1012,6 +1012,7 @@ class PyrogramBotHandler:
         # RANKING message = 50 xp, second in voice = 1 xp
         message_xp = 100
         voice_xp = 50
+        xp_factor = 100
 
         chat = message.chat
         try:
@@ -1078,20 +1079,32 @@ class PyrogramBotHandler:
                                                                                query=query, filter=query_filter)
 
             user_mention = f"[@{user.username}](tg://user?id={user.id})"
-            date = datetime.timedelta(seconds=seconds)
+            # date = datetime.timedelta(seconds=seconds)
+            hours_in_voice_channel = round(seconds / 3600, 1)
+
             xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
+
+            lvl = 0.5 + math.sqrt(1 + 8 * (xp) / (xp_factor)) / 2
+            lvl = int(lvl) - 1
+
+            xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
+
+            xp_have = int(xp - xp_for_level)
+            xp_need = (lvl + 1) * xp_factor
 
             return await self.pyrogramBot.bot.send_message(
                 chat_id=chat.id,
-                text="{user_mention} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}\n\n"
+                text="{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}h\n\n"
                      "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}".format(
                     user_mention=user_mention,
+                    lvl_text=_("lvl"),
+                    lvl=lvl,
                     xp_text=_("xp"),
-                    xp=round(xp),
+                    xp=f"{xp_have} | {xp_need}",
                     messages_text=_("messages"),
                     messages_count=messages_count,
                     voice_time_text=_("voice time"),
-                    voice_time=date,
+                    voice_time=hours_in_voice_channel,
                     message_xp=message_xp,
                     xp_per_messaage_text=_("xp per message"),
                     voice_xp=voice_xp,
@@ -1146,21 +1159,33 @@ class PyrogramBotHandler:
                                                                     chat_title=chat.title)
             i = 0
             for user, messages_count, seconds, xp in stats[0:10]:
-                date = datetime.timedelta(seconds=seconds)
+                # date = datetime.timedelta(seconds=seconds)
                 i += 1
 
                 user_mention = f"[@{user.username}](tg://user?id={user.id})"
 
-                top_list = "{top_list}{i}.{user_mention} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}\n".format(
+                hours_in_voice_channel = round(seconds / 3600, 1)
+
+                lvl = 0.5 + math.sqrt(1 + 8 * (xp) / (xp_factor)) / 2
+                lvl = int(lvl) - 1
+
+                xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
+
+                xp_have = int(xp - xp_for_level)
+                xp_need = (lvl + 1) * xp_factor
+
+                top_list = "{top_list}{i}.{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}h\n".format(
                     top_list=top_list,
                     i=i,
                     user_mention=user_mention,
+                    lvl_text=_("lvl"),
+                    lvl=lvl,
                     xp_text=_("xp"),
-                    xp=round(xp),
+                    xp=f"{xp_have} | {xp_need}",
                     messages_text=_("messages"),
                     messages_count=messages_count,
                     voice_time_text=_("voice time"),
-                    voice_time=date)
+                    voice_time=hours_in_voice_channel)
 
                 # top_list = f"{top_list}{i}.{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n"
 

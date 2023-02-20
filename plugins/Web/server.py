@@ -93,13 +93,13 @@ class WebServer:
             await self.pyrogramBot.set_default_commands()
             await self.pyrogramBot.set_default_commands_ru()
 
-            # session = await self.pyrogramBot.bot.export_session_string()
+            session = await self.pyrogramBot.bot.export_session_string()
             # print(session)
 
         if self.twitch:
             self.twitch.authenticate_app([])
 
-        await self.pyrogramBot.bot.send_message(chat_id=365867152, text="Online")
+        # await self.pyrogramBot.bot.send_message(chat_id=365867152, text="Online")
 
     async def __on_shutdown(self, web):
         if self.aiogramBot:

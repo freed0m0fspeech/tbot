@@ -3,10 +3,12 @@ WebServerHandler plugin to work with Handler
 """
 import json
 import os
-from json import dumps
+import textwrap
+from json import dumps, JSONDecodeError
 from math import sqrt
 
 from bson import json_util
+from dotenv import load_dotenv
 from pyrogram.enums import MessagesFilter
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler, InlineQueryHandler, ChosenInlineResultHandler, \
     RawUpdateHandler
@@ -16,6 +18,10 @@ from aiohttp.web import Response, Request, json_response
 from plugins.Bots.AiogramBot.handlers import AiogramBotHandler
 from plugins.Bots.PyrogramBot.handlers import PyrogramBotHandler
 from plugins.Twitch.handlers import TwitchHandler
+
+# load_dotenv()
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 
 class WebServerHandler:
@@ -62,6 +68,8 @@ class WebServerHandler:
                                                self.__user_parameters_handler)
         self.webServer.client.router.add_route('GET', '/chat/{chat:[^\\/]+}',
                                                self.__chat_parameters_handler)
+        self.webServer.client.router.add_route('POST', '/send/{chat:[^\\/]+}',
+                                               self.__send_message_handler)
 
     # Aiogram ----------------------------------------------------------------------------------------------------------
     def __register_handlers_aiogramBot(self):
@@ -165,7 +173,29 @@ class WebServerHandler:
     async def __default_handler(self, request: 'Request'):
         return Response(text="I'm Web handler")
 
+    async def __send_message_handler(self, request: 'Request'):
+        if request.host not in ALLOWED_HOSTS:
+            return Response(status=403)
+
+        chat = request.match_info['chat']
+
+        try:
+            data = await request.json()
+        except JSONDecodeError:
+            return Response(status=500)
+
+        text = data.get('text', '')
+        if text:
+            await self.pyrogramBot.bot.send_message(
+                chat_id=chat,
+                text=text,
+            )
+
+        return Response()
     async def __member_parameters_handler(self, request: 'Request'):
+        if request.host not in ALLOWED_HOSTS:
+            return Response(status=403)
+
         user = request.match_info['user']
         # chat_id = request.match_info['chat_id']
         chat = request.match_info['chat']
@@ -265,6 +295,9 @@ class WebServerHandler:
         return json_response(response)
 
     async def __user_parameters_handler(self, request: 'Request'):
+        if request.host not in ALLOWED_HOSTS:
+            return Response(status=403)
+
         user = request.match_info['user']
 
         try:
@@ -310,6 +343,9 @@ class WebServerHandler:
         return json_response(response)
 
     async def __chat_parameters_handler(self, request: 'Request'):
+        if request.host not in ALLOWED_HOSTS:
+            return Response(status=403)
+
         chat = request.match_info['chat']
 
         try:
