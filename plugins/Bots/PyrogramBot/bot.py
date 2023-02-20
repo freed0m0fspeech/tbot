@@ -50,7 +50,7 @@ class PyrogramBot:
         self.MessageHandlerCommands = {'leave': 'group', 'start': 'private', 'skip': 'group', 'queue': 'group',
                                        'speech_to_text': 'all', 'clear': 'group', 'play': 'group', 'join': 'group',
                                        'now': 'group', 'pause': 'group', 'lyrics': 'all', 'help': 'all',
-                                       'stats': 'group', 'language': 'all'}
+                                       'stats': 'group', 'language': 'all', 'mute': 'group'}
         self.CallbackQueryHandlerCommands = {'queue': 'group'}
         self.InlineQueryHandlerCommands = {'play': 'group'}
 
@@ -63,9 +63,10 @@ class PyrogramBot:
         with Client(session_name, api_id=api_id, api_hash=api_hash) as app:
             return app.export_session_string()
 
-    async def set_default_commands(self, bot_commands_default: SetBotCommands = None,
-                                   bot_commands_users: SetBotCommands = None,
-                                   bot_commands_chats: SetBotCommands = None):
+    async def set_default_commands(self, bot_commands_default: [BotCommand] = None,
+                                   bot_commands_users: [BotCommand] = None,
+                                   bot_commands_chats: [BotCommand] = None,
+                                   bot_commands_chats_admins: [BotCommand] = None):
         """
         botCommandScopeDefault	The commands will be valid in all chats
         botCommandScopeUsers	The specified bot commands will only be valid in all private chats with users.
@@ -78,71 +79,108 @@ class PyrogramBot:
 
         if not bot_commands_default:
             bot_commands_default = [
-                BotCommand(command='start', description="Start command"),
-                BotCommand(command='help', description="Help command"),
+                # BotCommand(command='start', description="Start command"),
+                # BotCommand(command='help', description="Help command"),
             ]
         if not bot_commands_users:
             bot_commands_users = [
-                BotCommand(command='start', description="Start command"),
-                BotCommand(command='help', description="Help command"),
+                # BotCommand(command='start', description="Start command"),
+                # BotCommand(command='help', description="Help command"),
                 #BotCommand(command='echo', description="Echo any message (/echo [message])"),
                 BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
                 BotCommand(command='speech_to_text', description="Speech to text (reply to voice with /speech_to_text)"),
             ]
         if not bot_commands_chats:
             bot_commands_chats = [
-                BotCommand(command='help', description="Help command"),
+                # BotCommand(command='help', description="Help command"),
+                BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
+                BotCommand(command='join', description="Join group call"),
+                BotCommand(command='leave', description="Stop playing media"),
+                BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
+                BotCommand(command='now', description="Now playing media info"),
+                BotCommand(command='pause', description="Pause/Resume media"),
                 BotCommand(command='play', description="Play media by url or text (/play [url/text]) "
                                                        "(@sc@, @yt@, @video@, @sync@)"),
-                BotCommand(command='skip', description="Skip playing media"),
-                BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
-                BotCommand(command='pause', description="Pause/Resume media"),
-                BotCommand(command='now', description="Now playing media info"),
                 BotCommand(command='queue', description="Group queue media info (/queue [page])"),
-                BotCommand(command='leave', description="Stop playing media"),
-                BotCommand(command='join', description="Join group call"),
-                BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
+                BotCommand(command='skip', description="Skip playing media"),
                 BotCommand(command='speech_to_text', description="Speech to text (reply to voice with /speech_to_text)"),
                 BotCommand(command='stats', description="Stats about you or some person in group (/stats [user])"),
                 #BotCommand(command='language', description="Change language of bot (/language [lang_code])"),
             ]
 
+        if not bot_commands_chats_admins:
+            bot_commands_chats_admins = [
+                BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
+                BotCommand(command='join', description="Join group call"),
+                BotCommand(command='leave', description="Stop playing media"),
+                BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
+                BotCommand(command='mute', description="Mute someone in group (/mute [user] [duratuin])"),
+                BotCommand(command='now', description="Now playing media info"),
+                BotCommand(command='pause', description="Pause/Resume media"),
+                BotCommand(command='play', description="Play media by url or text (/play [url/text]) "
+                                                       "(@sc@, @yt@, @video@, @sync@)"),
+                BotCommand(command='queue', description="Group queue media info (/queue [page])"),
+                BotCommand(command='skip', description="Skip playing media"),
+                BotCommand(command='speech_to_text',
+                           description="Speech to text (reply to voice with /speech_to_text)"),
+                BotCommand(command='stats', description="Stats about you or some person in group (/stats [user])"),
+            ]
+
         await self.bot.set_bot_commands(bot_commands_default, scope=BotCommandScopeDefault(), language_code='en')
         await self.bot.set_bot_commands(bot_commands_users, scope=BotCommandScopeAllPrivateChats(), language_code='en')
         await self.bot.set_bot_commands(bot_commands_chats, scope=BotCommandScopeAllGroupChats(), language_code='en')
+        await self.bot.set_bot_commands(bot_commands_chats_admins, scope=BotCommandScopeAllChatAdministrators(), language_code='en')
 
     async def set_default_commands_ru(self):
         bot_commands_default = [
-            BotCommand(command='start', description="Start команда"),
-            BotCommand(command='help', description="Help команда"),
+            # BotCommand(command='start', description="Start команда"),
+            # BotCommand(command='help', description="Help команда"),
         ]
 
         bot_commands_users = [
-            BotCommand(command='start', description="Start команда"),
-            BotCommand(command='help', description="Help команда"),
+            # BotCommand(command='start', description="Start команда"),
+            # BotCommand(command='help', description="Help команда"),
             # BotCommand(command='echo', description="Echo any message (/echo [message])"),
             BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
             BotCommand(command='speech_to_text',
                        description="Распознаниие речи в голосовом сообщении (переслать голосовое с /speech_to_text)"),
         ]
         bot_commands_chats = [
-            BotCommand(command='help', description="Help команда"),
+            # BotCommand(command='help', description="Help команда"),
+            BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
+            BotCommand(command='join', description="Присойденится к голосовому каналу"),
+            BotCommand(command='leave', description="Покинуть голосовой канал"),
+            BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
+            BotCommand(command='now', description="Информация о текущем мультимедиа"),
+            BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
             BotCommand(command='play', description="Добавить в очередь мультимедиа (/play [url/название]) "
                                                    "(@sc@, @yt@, @video@, @sync@)"),
-            BotCommand(command='skip', description="Пропуск мультимедиа"),
-            BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
-            BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
-            BotCommand(command='now', description="Информация о текущем мультимедиа"),
             BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
-            BotCommand(command='leave', description="Покинуть голосовой канал"),
-            BotCommand(command='join', description="Присойденится к голосовому каналу"),
-            BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
+            BotCommand(command='skip', description="Пропуск мультимедиа"),
             BotCommand(command='speech_to_text',
                        description="Распознаниие речи в голосовом сообщении (переслать голосовое с /speech_to_text)"),
             BotCommand(command='stats', description="Информация о участнике или топ группы (/stats [участник])"),
             # BotCommand(command='language', description="Change language of bot (/language [lang_code])"),
         ]
 
+        bot_commands_chats_admins = [
+            BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
+            BotCommand(command='join', description="Присойденится к голосовому каналу"),
+            BotCommand(command='leave', description="Покинуть голосовой канал"),
+            BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
+            BotCommand(command='mute', description="Выдать мут участнику группы (/mute [участник] [длительность])"),
+            BotCommand(command='now', description="Информация о текущем мультимедиа"),
+            BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
+            BotCommand(command='play', description="Добавить в очередь мультимедиа (/play [url/название]) "
+                                                   "(@sc@, @yt@, @video@, @sync@)"),
+            BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
+            BotCommand(command='skip', description="Пропуск мультимедиа"),
+            BotCommand(command='speech_to_text',
+                       description="Распознаниие речи в голосовом сообщении (переслать голосовое с /speech_to_text)"),
+            BotCommand(command='stats', description="Информация о участнике или топ группы (/stats [участник])"),
+        ]
+
         await self.bot.set_bot_commands(bot_commands_default, scope=BotCommandScopeDefault(), language_code='ru')
         await self.bot.set_bot_commands(bot_commands_users, scope=BotCommandScopeAllPrivateChats(), language_code='ru')
         await self.bot.set_bot_commands(bot_commands_chats, scope=BotCommandScopeAllGroupChats(), language_code='ru')
+        await self.bot.set_bot_commands(bot_commands_chats_admins, scope=BotCommandScopeAllChatAdministrators(), language_code='ru')

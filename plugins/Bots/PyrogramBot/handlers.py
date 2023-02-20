@@ -4,19 +4,18 @@ import gettext
 import math
 import os
 import random
-
 import pyrogram
 import speech_recognition
 import time
 import youtube_dl
-
 from datetime import timedelta
 
-from pyrogram.enums import MessagesFilter, ParseMode, ChatType
+from pyrogram.enums import MessagesFilter, ParseMode, ChatType, ChatMemberStatus
 from pyrogram.raw import types as raw_types
 from pyrogram.raw.functions import phone
 from pyrogram import types
 from pyrogram.raw import base
+from pyrogram.types import ChatPermissions
 from plugins.Bots.PyrogramBot.bot import PyrogramBot
 from pyrogram import errors, ContinuePropagation
 from plugins.Helpers import youtube_dl, media_convertor
@@ -73,7 +72,7 @@ class PyrogramBotHandler:
     async def language_command(self, client: Client, message: types.Message):
         chat_member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
 
-        if not chat_member.status == 'creator':
+        if not chat_member.status == ChatMemberStatus.OWNER:
             # TODO print message
             return
 
@@ -122,6 +121,59 @@ class PyrogramBotHandler:
 
             except errors.FloodWait as e:
                 time.sleep(e.x)
+
+    async def mute_command(self, client: Client, message: types.Message):
+        try:
+            parameters = message.text.split(" ", maxsplit=2)
+            username = parameters[1]
+            duration = parameters[2]
+        except IndexError:
+            return
+
+            # return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
+            #                                                text="✖️{text}".format(
+            #                                                    text=_("Enter correct duration in minutes"))
+            #                                                )
+
+        try:
+            duration = int(duration)
+        except ValueError:
+            return
+
+        if 0 < duration < 61:
+            try:
+                member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+                user = await self.pyrogramBot.bot.get_users(user_ids=username)
+            except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
+                return
+
+            if member.custom_title.lower() == 'judge':
+                await self.pyrogramBot.bot.restrict_chat_member(chat_id=message.chat.id,
+                                                                user_id=user.id,
+                                                                permissions=ChatPermissions(),
+                                                                until_date=datetime.datetime.now() + timedelta(minutes=duration))
+                # user_mention = f"[@{username}](tg://user?id={username.id})"
+
+                await message.delete()
+
+                return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
+                                                               text="✔️{user} {was_muted_by} {by_user} {on} {duration}m".format(
+                                                                   was_muted_by=_("was muted by"),
+                                                                   on=_("on"),
+                                                                   duration=duration,
+                                                                   user=user.mention(f"@{user.username}"),
+                                                                   by_user=message.from_user.mention(f"@{message.from_user.username}"))
+                                                               )
+            else:
+                return
+        else:
+            return
+
+            # return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
+            #                                                text="✖️{text}".format(
+            #                                                    text=_("Enter correct duration in minutes"))
+            #                                                )
+
 
     # ------------------------------------------------------------------------------------------------------------------
     # Player -----------------------------------------------------------------------------------------------------------

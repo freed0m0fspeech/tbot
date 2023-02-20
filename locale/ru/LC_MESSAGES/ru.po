@@ -101,6 +101,15 @@ msgstr "Длительность"
 msgid "Added by"
 msgstr "Добавил(а)"
 
+msgid "was muted by"
+msgstr "получил мут от"
+
+msgid "on"
+msgstr "на"
+
+msgid "minute(s)"
+msgstr "минут(ы)(у)"
+
 #: plugins\Bots\PyrogramBot\handlers.py:464
 msgid "Use /lyrics [song title] instead"
 msgstr "Используй /lyrics [название]"

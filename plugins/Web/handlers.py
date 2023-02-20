@@ -1,15 +1,18 @@
 """
 WebServerHandler plugin to work with Handler
 """
+import asyncio
 import json
 import os
 import textwrap
+import rsa
+
 from json import dumps, JSONDecodeError
 from math import sqrt
-
 from bson import json_util
 from dotenv import load_dotenv
 from pyrogram.enums import MessagesFilter
+from pyrogram.errors import FloodWait
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler, InlineQueryHandler, ChosenInlineResultHandler, \
     RawUpdateHandler
 from pyrogram import filters, errors
@@ -184,12 +187,18 @@ class WebServerHandler:
         except JSONDecodeError:
             return Response(status=500)
 
+        if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
+            return Response(status=403)
+
         text = data.get('text', '')
         if text:
-            await self.pyrogramBot.bot.send_message(
-                chat_id=chat,
-                text=text,
-            )
+            try:
+                await self.pyrogramBot.bot.send_message(
+                    chat_id=chat,
+                    text=text,
+                )
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
 
         return Response()
 
@@ -303,6 +312,14 @@ class WebServerHandler:
         user = request.match_info['user']
 
         try:
+            data = await request.json()
+        except JSONDecodeError:
+            return Response(status=500)
+
+        if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
+            return Response(status=403)
+
+        try:
             user = await self.pyrogramBot.user.get_users(user)
         except (errors.UsernameInvalid, errors.PeerIdInvalid, errors.UserInvalid):
             user = None
@@ -349,6 +366,14 @@ class WebServerHandler:
             return Response(status=403)
 
         chat = request.match_info['chat']
+
+        try:
+            data = await request.json()
+        except JSONDecodeError:
+            return Response(status=500)
+
+        if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
+            return Response(status=403)
 
         try:
             chat = await self.pyrogramBot.user.get_chat(chat)
