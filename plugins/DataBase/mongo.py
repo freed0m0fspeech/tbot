@@ -2,6 +2,7 @@
 MongoDataBase plugin to work with MongoDataBase
 """
 from pymongo import MongoClient, errors, ReturnDocument
+from pymongo.server_api import ServerApi
 from pymongo.cursor import Cursor
 from urllib.parse import quote_plus
 from typing import Optional
@@ -26,7 +27,7 @@ class MongoDataBase:
         :return: typing.Optional[pymongo.MongoClient]
         """
         uri = "mongodb+srv://%s:%s@%s" % (quote_plus(user), quote_plus(passwd), host)
-        mdb_client = MongoClient(uri)
+        mdb_client = MongoClient(uri, server_api=ServerApi('1'))
 
         # mdb_client = pymongo.MongoClient(
         #    f"mongodb+srv://{user}:{passwd}@botcluster.iy7wi.mongodb.net/AiogramBot?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
@@ -45,7 +46,7 @@ class MongoDataBase:
     def update_field(self, database_name: str, collection_name: str, action: str, query: dict,
                      filter: Optional[dict] = {},
                      return_document: Optional[ReturnDocument] = ReturnDocument.BEFORE,
-                     upsert: Optional[bool] = True) -> Optional[dict]:
+                     upsert: Optional[bool] = True, updateMany=False) -> Optional[dict]:
         """
         **Update document field in MongoDataBase**\n
         :param database_name: MongoDataBase name
@@ -112,6 +113,10 @@ class MongoDataBase:
         collection = database.get_collection(collection_name)
 
         update = {action: query}
+
+        if updateMany:
+            collection.update_many(filter=filter, update=update, upsert=upsert)
+            return {}
 
         return collection.find_one_and_update(filter=filter, update=update, return_document=return_document,
                                               upsert=upsert)
