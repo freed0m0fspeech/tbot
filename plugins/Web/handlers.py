@@ -473,13 +473,18 @@ class WebServerHandler:
         if action == 'promote_chat_member':
             # Promote chat member to admin
             promote_rights = ChatPrivileges()
-            await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=promote_rights)
+            if await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=promote_rights):
+                for i in range(5):
+                    try:
+                        print(self.pyrogramBot.user.get_chat_member(chat, user).status)
+                        if parameters:
+                            custom_title = parameters.get('custom_title', '')
 
-            if parameters:
-                custom_title = parameters.get('custom_title', '')
-
-                if custom_title:
-                    await self.pyrogramBot.user.set_administrator_title(chat_id=chat.id, user_id=user.id, title=custom_title)
+                            if custom_title:
+                                if await self.pyrogramBot.user.set_administrator_title(chat_id=chat.id, user_id=user.id, title=custom_title):
+                                    return Response()
+                    except ValueError:
+                        await asyncio.sleep(5000)
 
         return Response()
 
