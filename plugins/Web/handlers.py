@@ -476,7 +476,6 @@ class WebServerHandler:
             if await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=promote_rights):
                 for i in range(5):
                     try:
-                        print(self.pyrogramBot.user.get_chat_member(chat, user).status)
                         if parameters:
                             custom_title = parameters.get('custom_title', '')
 
