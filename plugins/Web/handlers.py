@@ -17,12 +17,12 @@ from pyrogram.handlers import MessageHandler, CallbackQueryHandler, InlineQueryH
     RawUpdateHandler
 from pyrogram import filters, errors
 from aiohttp.web import Response, Request, json_response
-
 from plugins.Bots.AiogramBot.handlers import AiogramBotHandler
 from plugins.Bots.PyrogramBot.handlers import PyrogramBotHandler
 from plugins.Twitch.handlers import TwitchHandler
+from pyrogram.types import ChatPrivileges
 
-# load_dotenv()
+load_dotenv()
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
@@ -73,6 +73,8 @@ class WebServerHandler:
                                                self.__chat_parameters_handler)
         self.webServer.client.router.add_route('POST', '/send/{chat:[^\\/]+}',
                                                self.__send_message_handler)
+        self.webServer.client.router.add_route('POST', '/manage/{chat:[^\\/]+}/{user:[^\\/]+}',
+                                               self.__manage_chat_handler)
 
     # Aiogram ----------------------------------------------------------------------------------------------------------
     def __register_handlers_aiogramBot(self):
@@ -196,6 +198,7 @@ class WebServerHandler:
                 await self.pyrogramBot.bot.send_message(
                     chat_id=chat,
                     text=text,
+                    disable_web_page_preview=True,
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.value)
@@ -221,6 +224,14 @@ class WebServerHandler:
         #
         # if not user or not chat or not member:
         #     return Response(status=422)
+
+        try:
+            data = await request.json()
+        except JSONDecodeError:
+            return Response(status=500)
+
+        if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
+            return Response(status=403)
 
         try:
             member = await self.pyrogramBot.user.get_chat_member(chat, user)
@@ -419,6 +430,58 @@ class WebServerHandler:
         }
 
         return json_response(response)
+
+    async def __manage_chat_handler(self, request: 'Request'):
+        if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
+            return Response(status=403)
+
+        user = request.match_info['user']
+        chat = request.match_info['chat']
+
+        try:
+            data = await request.json()
+        except JSONDecodeError:
+            return Response(status=500)
+
+        if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
+            return Response(status=403)
+
+        action = data.get('action', '')
+        parameters = data.get('parameters', '')
+
+        if not action:
+            return Response(status=422)
+
+        try:
+            member = await self.pyrogramBot.user.get_chat_member(chat, user)
+            chat = await self.pyrogramBot.user.get_chat(chat)
+            user = await self.pyrogramBot.user.get_users(user)
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
+            member = None
+            user = None
+            chat = None
+
+        if not member or not user or not chat:
+            return Response(status=422)
+
+        if action == 'demote_chat_member':
+            # Demote chat member
+            demote_rights = ChatPrivileges()
+            demote_rights.can_manage_chat = False
+            await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=demote_rights)
+
+        if action == 'promote_chat_member':
+            # Promote chat member to admin
+            promote_rights = ChatPrivileges()
+            await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=promote_rights)
+
+            if parameters:
+                custom_title = parameters.get('custom_title', '')
+
+                if custom_title:
+                    await self.pyrogramBot.user.set_administrator_title(chat_id=chat.id, user_id=user.id, title=custom_title)
+
+        return Response()
 
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
