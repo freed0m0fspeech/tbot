@@ -483,7 +483,7 @@ class WebServerHandler:
                                 if await self.pyrogramBot.user.set_administrator_title(chat_id=chat.id, user_id=user.id, title=custom_title):
                                     return Response()
                     except ValueError:
-                        await asyncio.sleep(5000)
+                        await asyncio.sleep(5)
 
         return Response()
 
