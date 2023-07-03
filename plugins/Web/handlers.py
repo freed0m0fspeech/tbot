@@ -237,7 +237,7 @@ class WebServerHandler:
             member = await self.pyrogramBot.user.get_chat_member(chat, user)
             chat = await self.pyrogramBot.user.get_chat(chat)
             user = await self.pyrogramBot.user.get_users(user)
-        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
             member = None
             user = None
             chat = None
@@ -456,7 +456,7 @@ class WebServerHandler:
             member = await self.pyrogramBot.user.get_chat_member(chat, user)
             chat = await self.pyrogramBot.user.get_chat(chat)
             user = await self.pyrogramBot.user.get_users(user)
-        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
             member = None
             user = None
             chat = None
