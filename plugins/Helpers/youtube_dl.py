@@ -3,12 +3,12 @@ import subprocess
 import re
 import speech_recognition
 #import streamlink
-import youtube_dl
+# import youtube_dl
 import yt_dlp
 
 from datetime import datetime
 from datetime import timedelta
-from youtube_dl import DownloadError
+from yt_dlp import DownloadError
 #from streamlink import NoPluginError, PluginError, StreamlinkError, NoStreamsError, StreamError
 
 regex_link = re.compile(

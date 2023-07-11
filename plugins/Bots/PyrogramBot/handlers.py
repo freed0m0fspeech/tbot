@@ -7,7 +7,7 @@ import random
 import pyrogram
 import speech_recognition
 import time
-import youtube_dl
+# import youtube_dl
 import yt_dlp
 from datetime import timedelta
 
