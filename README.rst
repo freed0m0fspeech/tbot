@@ -12,6 +12,7 @@ Additional info about ``tbot`` file, you can find `here <https://github.com/pr0s
 ---------------
 
 Commands:
+
   * /help - Help command
   * /play [text/url] - Play audio by url or text
   * /play @video@ [text/url] - Play video by url or text
@@ -32,6 +33,7 @@ Commands:
 ---------------
 
 Inline commands:
+
   * @F0S_bot /play [text] - Search for audio
   * @F0s_bot /play @sc@ [text] - Search for media in SoundCloud
   * @F0s_bot /play @yt@ [text] - Search for media in YouTube
