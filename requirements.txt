@@ -6,7 +6,7 @@ requests~=2.31.0
 twitchAPI~=2.4.2
 pymongo[srv]~=4.3.3
 Flask>=2.2.5
-pytgcalls==3.0.0.dev24
+pytgcalls~=3.0.0.dev24
 pafy~=0.5.5
 Pyrogram~=2.0.99
 bs4~=0.0.1
