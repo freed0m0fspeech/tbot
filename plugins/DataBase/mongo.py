@@ -14,34 +14,62 @@ class MongoDataBase:
     """
 
     def __init__(self, host, user, passwd):
-        self.client = self.__get_connection(host, user, passwd)
+        self.__host = host
+        self.__user = user
+        self.__passwd = passwd
+        self.client = None
+        self.get_connection()
 
-    @staticmethod
-    def __get_connection(host, user, passwd) -> Optional[MongoClient]:
+    def get_connection(self) -> bool:
         """
         **Get connection to MongoDataBase**
 
         :param host: Host link to MongoDataBase
         :param user: Username of MongoDataBase client
         :param passwd: Password of MongoDataBase client
-        :return: typing.Optional[pymongo.MongoClient]
+        :return: bool
         """
+        host = self.__host
+        user = self.__user
+        passwd = self.__passwd
         uri = "mongodb+srv://%s:%s@%s" % (quote_plus(user), quote_plus(passwd), host)
-        mdb_client = MongoClient(uri, server_api=ServerApi('1'))
 
         # mdb_client = pymongo.MongoClient(
         #    f"mongodb+srv://{user}:{passwd}@botcluster.iy7wi.mongodb.net/AiogramBot?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
         try:
+            mdb_client = MongoClient(uri, server_api=ServerApi('1'))
+
             # The ping command is cheap and does not require auth.
             mdb_client.admin.command('ping')
-        except errors.ConnectionFailure:
-            print("MongoDataBase server not available")
-            return None
-        except errors.OperationFailure:
-            print("MongoDataBasee authentication failed")
-            return None
+            # print("You successfully connected to MongoDB!")
+            self.client = mdb_client
+            return True
+        except Exception as e:
+            print(e)
+            # print(e)
+            self.client = None
+            return False
+            # return None
+        # except errors.ConnectionFailure:
+        #     print("MongoDataBase server not available")
+        #     return None
+        # except errors.OperationFailure:
+        #     print("MongoDataBasee authentication failed")
+        #     return None
 
-        return mdb_client
+        # return mdb_client
+
+    def check_connection(self):
+        if not self.client:
+            if not self.client.get_connection():
+                return False
+        else:
+            try:
+                self.client.admin.command('ping')
+            except Exception as e:
+                return False
+
+        return True
 
     def update_field(self, database_name: str, collection_name: str, action: str, query: dict,
                      filter: Optional[dict] = {},
@@ -109,21 +137,26 @@ class MongoDataBase:
 
         `$bit` Performs bitwise AND, OR, and XOR updates of integer values.
         """
-        database = self.client.get_database(database_name)
-        collection = database.get_collection(collection_name)
 
-        update = {action: query}
+        try:
+            database = self.client.get_database(database_name)
+            collection = database.get_collection(collection_name)
 
-        if updateMany:
-            collection.update_many(filter=filter, update=update, upsert=upsert)
-            return {}
+            update = {action: query}
 
-        return collection.find_one_and_update(filter=filter, update=update, return_document=return_document,
-                                              upsert=upsert)
+            if updateMany:
+                collection.update_many(filter=filter, update=update, upsert=upsert)
+                return {}
+
+            return collection.find_one_and_update(filter=filter, update=update, return_document=return_document,
+                                                  upsert=upsert)
+
+        except Exception as e:
+            return None
 
     def delete_field(self, database_name: str, collection_name: str, query: dict,
                      filter: Optional[dict] = {},
-                     return_document: Optional[ReturnDocument] = ReturnDocument.BEFORE) -> \
+                     return_document: Optional[bool] = True) -> \
             Optional[dict]:
         """
         **Delete document field from MongoDataBase**
@@ -136,12 +169,16 @@ class MongoDataBase:
         :param upsert: Optonal upsert value to upsert document if it does not exist
         :return: typing.Optaional[dict]
         """
-        database = self.client.get_database(database_name)
-        collection = database.get_collection(collection_name)
 
-        update = {'$unset': query}
+        try:
+            database = self.client.get_database(database_name)
+            collection = database.get_collection(collection_name)
 
-        return collection.find_one_and_update(filter=filter, update=update, return_document=return_document)
+            update = {'$unset': query}
+
+            return collection.find_one_and_update(filter=filter, update=update, return_document=return_document)
+        except Exception as e:
+            return None
 
     def get_document(self, database_name: str, collection_name: str, filter: Optional[dict] = {},
                      query: Optional[dict] = None) -> Optional[dict]:
@@ -155,13 +192,14 @@ class MongoDataBase:
         :param query: Query
         :return: typing.Optional[dict]
         """
-        database = self.client.get_database(database_name)
-        collection = database.get_collection(collection_name)
 
         try:
+            database = self.client.get_database(database_name)
+            collection = database.get_collection(collection_name)
+
             dict = collection.find_one(filter, query)
-        except errors.InvalidOperation:
-            return None
+        except Exception as e:
+            return {}
 
         return dict
 
@@ -176,19 +214,20 @@ class MongoDataBase:
         :param query: Query
         :return: typing.Optional[pymongo.cursor.Cursor]
         """
-        database = self.client.get_database(database_name)
-        collection = database.get_collection(collection_name)
 
         try:
+            database = self.client.get_database(database_name)
+            collection = database.get_collection(collection_name)
+
             cursor = collection.find(filter, query)
-        except errors.InvalidOperation:
+        except Exception as e:
             return None
 
         return cursor
 
     def update_document(self, database_name: str, collection_name: str, document: dict,
                         filter: Optional[dict] = {},
-                        return_document: Optional[ReturnDocument] = ReturnDocument.BEFORE,
+                        return_document: Optional[bool] = True,
                         upsert: Optional[bool] = True) -> Optional[dict]:
         """
         **Replace document from collection in MongoDataBase**
@@ -201,11 +240,15 @@ class MongoDataBase:
         :param upsert: Optonal upsert value to upsert document if it does not exist
         :return: typing.Optaional[dict]
         """
-        database = self.client.get_database(database_name)
-        collection = database.get_collection(collection_name)
 
-        return collection.find_one_and_replace(filter=filter, replacement=document, return_document=return_document,
-                                               upsert=upsert)
+        try:
+            database = self.client.get_database(database_name)
+            collection = database.get_collection(collection_name)
+
+            return collection.find_one_and_replace(filter=filter, replacement=document, return_document=return_document,
+                                                   upsert=upsert)
+        except Exception as e:
+            return None
 
     def delete_document(self, database_name: str, collection_name: str,
                         filter: Optional[dict] = {}) -> Optional[dict]:
@@ -217,7 +260,11 @@ class MongoDataBase:
         :param filter: Optional filter
         :return: typing.Optaional[dict]
         """
-        database = self.client.get_database(database_name)
-        collection = database.get_collection(collection_name)
 
-        return collection.find_one_and_delete(filter=filter)
+        try:
+            database = self.client.get_database(database_name)
+            collection = database.get_collection(collection_name)
+
+            return collection.find_one_and_delete(filter=filter)
+        except Exception as e:
+            return None
