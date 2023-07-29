@@ -61,7 +61,7 @@ class MongoDataBase:
 
     def check_connection(self):
         if not self.client:
-            if not self.client.get_connection():
+            if not self.get_connection():
                 return False
         else:
             try:

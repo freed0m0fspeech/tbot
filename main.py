@@ -1,18 +1,15 @@
 import asyncio
-import configparser
 import os
 
 from aiohttp.web import AppRunner, TCPSite
+from dotenv import load_dotenv
 from pyrogram import idle
 from plugins.Bots.PyrogramBot.bot import PyrogramBot
-from plugins.Bots.AiogramBot.bot import AiogramBot
 from plugins.Web.server import WebServer
-from plugins.Twitch.twitch import Twitch
-from plugins.Twitch.pubsub import PubSub
-from plugins.Twitch.eventsub import EventSub
-from plugins.Twitch.webhook import TwitchWebHook
 from plugins.DataBase.mongo import MongoDataBase
 from plugins.Google.google import Google
+
+load_dotenv()
 
 
 async def main():
@@ -30,7 +27,7 @@ async def main():
 
     MONGODATABASE_USER = os.getenv('MONGODATABASE_USER')
     MONGODATABASE_PASSWORD = os.getenv('MONGODATABASE_PASSWORD')
-    MONGODATABASE_HOST = f"{os.getenv('MONGODATABASE_HOST')}?retryWrites=true&w=majority"
+    MONGODATABASE_HOST = f"{os.getenv('MONGODATABASE_HOST')}"
 
     USER_SESSION = os.getenv('USER_SESSION')
     # BOT_SESSION = os.getenv('BOT_SESSION')
