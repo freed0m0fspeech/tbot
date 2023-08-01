@@ -406,9 +406,6 @@ class WebServerHandler:
         if not chat:
             return Response(status=422)
 
-        query = ""
-        query_filter = MessagesFilter.EMPTY
-
         members_parameters = {}
 
         query = {'_id': 0, f'users': 1, 'xp': 1}
@@ -417,9 +414,12 @@ class WebServerHandler:
 
         async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
             # Search only for userbots
-            messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=member.user.id,
-                                                                               query=query,
-                                                                               filter=query_filter)
+            query = ""
+            query_filter = MessagesFilter.EMPTY
+
+            messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id,
+                                                                               from_user=member.user.id,
+                                                                               query=query, filter=query_filter)
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
