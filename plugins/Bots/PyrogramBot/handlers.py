@@ -1062,10 +1062,6 @@ class PyrogramBotHandler:
 
     async def stats_command(self, client: Client, message: types.Message):
         # TODO add addition info and parameters
-        # RANKING message = 50 xp, second in voice = 1 xp
-        message_xp = 100
-        voice_xp = 50
-        xp_factor = 100
 
         chat = message.chat
         try:
@@ -1110,7 +1106,7 @@ class PyrogramBotHandler:
                                                                    user_name=user_name)
                                                                )
 
-            query = {'_id': 0, f'users.{user.id}.stats': 1}
+            query = {'_id': 0, f'users.{user.id}.stats': 1, 'xp': 1}
             document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                        filter={'chat_id': chat.id}, query=query)
             try:
@@ -1134,6 +1130,10 @@ class PyrogramBotHandler:
             user_mention = f"[@{user.username}](tg://user?id={user.id})"
             # date = datetime.timedelta(seconds=seconds)
             hours_in_voice_channel = round(seconds / 3600, 1)
+
+            message_xp = document.get('xp', {}).get('message_xp', 100)
+            voice_xp = document.get('xp', {}).get('voice_xp', 50)
+            xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
             xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
 
@@ -1167,9 +1167,13 @@ class PyrogramBotHandler:
                 #     f"({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
             )
         except IndexError:
-            query = {'_id': 0, f'users.$': 1}
+            query = {'_id': 0, f'users': 1, 'xp': 1}
             document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                        filter={'chat_id': chat.id}, query=query)
+
+            message_xp = document.get('xp', {}).get('message_xp', 100)
+            voice_xp = document.get('xp', {}).get('voice_xp', 50)
+            xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
             query = ""
             query_filter = MessagesFilter.EMPTY

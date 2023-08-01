@@ -253,13 +253,13 @@ class WebServerHandler:
                                                                            query=query,
                                                                            filter=query_filter)
 
-        message_xp = 100
-        voice_xp = 50
-        xp_factor = 100  # threshold
-
-        query = {'_id': 0, f'users.{user.id}.stats': 1}
+        query = {'_id': 0, f'users.{user.id}.stats': 1, 'xp': 1}
         document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                    filter={'chat_id': chat.id}, query=query)
+
+        message_xp = document.get('xp', {}).get('message_xp', 100)
+        voice_xp = document.get('xp', {}).get('voice_xp', 50)
+        xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
         try:
             stats = document['users'][f'{user.id}']['stats']
@@ -297,15 +297,15 @@ class WebServerHandler:
             'can_be_edited': member.can_be_edited,
             # 'permissions': member.permissions,
             # 'privileges', member.privileges,
-        }
-
-        response = {
             'messages_count': messages_count,
             'lvl': lvl,
             'xp_have': xp_have,
             'xp_need': xp_need,
             'hours_in_voice_channel': hours_in_voice_channel,
-            'member_parameters': member_parameters,
+        }
+
+        response = {
+            'member_parameters': member_parameters
         }
         # 'user': user.username,
         # 'chat.title': chat.title,
@@ -394,6 +394,78 @@ class WebServerHandler:
         if not chat:
             return Response(status=422)
 
+        query = ""
+        query_filter = MessagesFilter.EMPTY
+
+        members_parameters = {}
+
+        query = {'_id': 0, f'users': 1, 'xp': 1}
+        document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
+                                                   filter={'chat_id': chat.id}, query=query)
+
+        async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
+            # Search only for userbots
+            messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=member.user.id,
+                                                                               query=query,
+                                                                               filter=query_filter)
+
+            message_xp = document.get('xp', {}).get('message_xp', 100)
+            voice_xp = document.get('xp', {}).get('voice_xp', 50)
+            xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
+
+            try:
+                stats = document['users'][f'{member.user.id}']['stats']
+
+                seconds = 0.0
+                for voicetime in stats['voicetime']:
+                    seconds += voicetime
+
+                seconds = round(seconds)
+            except(IndexError, KeyError, TypeError):
+                seconds = 0
+
+            hours_in_voice_channel = round(seconds / 3600, 1)
+            xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
+
+            lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
+            lvl = int(lvl) - 1
+
+            xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
+
+            xp_have = int(xp - xp_for_level)
+            xp_need = (lvl + 1) * xp_factor
+
+
+            member_parameters = {
+                'messages_count': messages_count,
+                'lvl': lvl,
+                'xp_have': xp_have,
+                'xp_need': xp_need,
+                'hours_in_voice_channel': hours_in_voice_channel,
+                'joined_date': json.dumps(member.joined_date, default=json_util.default),
+                'custom_title': member.custom_title,
+                'until_date': json.dumps(member.until_date, default=json_util.default),
+                'is_member': member.is_member,
+                'can_be_edited': member.can_be_edited,
+            }
+
+            members_parameters[member.user.username] = member_parameters
+
+        stats = []
+
+        for username, parameters in members_parameters.items():
+            stat = (username, parameters.get('xp', 0))
+            stats.append(stat)
+
+        # Sort members by xp
+        stats.sort(reverse=True, key=lambda x: x[1])
+
+        i = 0
+        for stat in stats:
+            i += 1
+            # Position for member in chat by xp
+            members_parameters[stat[0]]['position'] = i
+
         chat_parameters = {
             'id': chat.id,
             # 'type': chat.type,
@@ -427,6 +499,7 @@ class WebServerHandler:
 
         response = {
             'chat_parameters': chat_parameters,
+            'members_parameters': members_parameters,
         }
 
         return json_response(response)
