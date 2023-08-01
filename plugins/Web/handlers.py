@@ -5,6 +5,8 @@ import asyncio
 import json
 import os
 import textwrap
+from datetime import datetime
+
 import rsa
 
 from json import dumps, JSONDecodeError
@@ -17,6 +19,8 @@ from pyrogram.handlers import MessageHandler, CallbackQueryHandler, InlineQueryH
     RawUpdateHandler
 from pyrogram import filters, errors
 from aiohttp.web import Response, Request, json_response
+from pytz import utc
+
 from plugins.Bots.AiogramBot.handlers import AiogramBotHandler
 from plugins.Bots.PyrogramBot.handlers import PyrogramBotHandler
 from plugins.Twitch.handlers import TwitchHandler
@@ -283,6 +287,9 @@ class WebServerHandler:
         xp_have = int(xp - xp_for_level)
         xp_need = (lvl + 1) * xp_factor
 
+        date = datetime.now(tz=utc)
+        date = date.strftime('%Y-%m-%d %H:%M:%S')
+
         member_parameters = {
             # 'status': member.status,
             # 'user': member.user,
@@ -302,6 +309,7 @@ class WebServerHandler:
             'xp_have': xp_have,
             'xp_need': xp_need,
             'hours_in_voice_channel': hours_in_voice_channel,
+            'date': date,
         }
 
         response = {
@@ -338,6 +346,9 @@ class WebServerHandler:
         if not user:
             return Response(status=422)
 
+        date = datetime.now(tz=utc)
+        date = date.strftime('%Y-%m-%d %H:%M:%S')
+
         user_parameters = {
             'id': user.id,
             'is_self': user.is_self,
@@ -364,6 +375,7 @@ class WebServerHandler:
             # 'photo': user.photo,
             # 'restrictions': user.restrictions,
             'mention': user.mention,
+            'date': date,
         }
 
         response = {
@@ -435,6 +447,8 @@ class WebServerHandler:
             xp_have = int(xp - xp_for_level)
             xp_need = (lvl + 1) * xp_factor
 
+            date = datetime.now(tz=utc)
+            date = date.strftime('%Y-%m-%d %H:%M:%S')
 
             member_parameters = {
                 'messages_count': messages_count,
@@ -447,6 +461,7 @@ class WebServerHandler:
                 'until_date': json.dumps(member.until_date, default=json_util.default),
                 'is_member': member.is_member,
                 'can_be_edited': member.can_be_edited,
+                'date': date,
             }
 
             members_parameters[member.user.username] = member_parameters
@@ -465,6 +480,9 @@ class WebServerHandler:
             i += 1
             # Position for member in chat by xp
             members_parameters[stat[0]]['position'] = i
+
+        date = datetime.now(tz=utc)
+        date = date.strftime('%Y-%m-%d %H:%M:%S')
 
         chat_parameters = {
             'id': chat.id,
@@ -495,6 +513,7 @@ class WebServerHandler:
             # 'linked_chat': chat.linked_chat,
             # 'send_as_chat': chat.send_as_chat,
             # 'available_reactions': chat.available_reactions,
+            'date': date,
         }
 
         response = {
