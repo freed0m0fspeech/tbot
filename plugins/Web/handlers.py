@@ -466,12 +466,12 @@ class WebServerHandler:
                 'date': date,
             }
 
-            members_parameters[member.user.username] = member_parameters
+            members_parameters[member.user.id] = member_parameters
 
         stats = []
 
-        for username, parameters in members_parameters.items():
-            stat = (username, parameters.get('xp', 0))
+        for user_id, parameters in members_parameters.items():
+            stat = (user_id, parameters.get('xp', 0))
             stats.append(stat)
 
         # Sort members by xp
@@ -481,8 +481,8 @@ class WebServerHandler:
         for stat in stats:
             i += 1
             # Position for member in chat by xp
-            username = stat[0]
-            members_parameters[username]['position'] = i
+            user_id = stat[0]
+            members_parameters[user_id]['position'] = i
 
         date = datetime.now(tz=utc)
         date = date.strftime('%Y-%m-%d %H:%M:%S')
