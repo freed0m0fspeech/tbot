@@ -308,6 +308,7 @@ class WebServerHandler:
             'lvl': lvl,
             'xp_have': xp_have,
             'xp_need': xp_need,
+            'xp': xp,
             'hours_in_voice_channel': hours_in_voice_channel,
             'date': date,
         }
@@ -455,6 +456,7 @@ class WebServerHandler:
                 'lvl': lvl,
                 'xp_have': xp_have,
                 'xp_need': xp_need,
+                'xp': xp,
                 'hours_in_voice_channel': hours_in_voice_channel,
                 'joined_date': json.dumps(member.joined_date, default=json_util.default),
                 'custom_title': member.custom_title,
@@ -479,7 +481,8 @@ class WebServerHandler:
         for stat in stats:
             i += 1
             # Position for member in chat by xp
-            members_parameters[stat[0]]['position'] = i
+            username = stat[0]
+            members_parameters[username]['position'] = i
 
         date = datetime.now(tz=utc)
         date = date.strftime('%Y-%m-%d %H:%M:%S')
