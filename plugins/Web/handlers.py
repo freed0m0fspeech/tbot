@@ -265,16 +265,7 @@ class WebServerHandler:
         voice_xp = document.get('xp', {}).get('voice_xp', 50)
         xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
-        try:
-            stats = document['users'][f'{user.id}']['stats']
-
-            seconds = 0.0
-            for voicetime in stats['voicetime']:
-                seconds += voicetime
-
-            seconds = round(seconds)
-        except(IndexError, KeyError, TypeError):
-            seconds = 0
+        seconds = document.get('users', {}).get(user.id, {}).get('stats', {}).get('voicetime', 0)
 
         hours_in_voice_channel = round(seconds / 3600, 1)
         xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
@@ -426,16 +417,7 @@ class WebServerHandler:
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
-            try:
-                stats = document['users'][f'{member.user.id}']['stats']
-
-                seconds = 0.0
-                for voicetime in stats['voicetime']:
-                    seconds += voicetime
-
-                seconds = round(seconds)
-            except(IndexError, KeyError, TypeError):
-                seconds = 0
+            seconds = document.get('users', {}).get(member.user.id, {}).get('stats', {}).get('voicetime', 0)
 
             hours_in_voice_channel = round(seconds / 3600, 1)
             xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)

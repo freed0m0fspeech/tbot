@@ -1392,11 +1392,10 @@ class PyrogramBotHandler:
                     # print(groupCall)
                     # chat = await self.pyrogramBot.bot.get_chat(chat_id=groupCall.title)
 
-                    query = {f'users.{user.id}.stats.datetime': datetime.datetime.now(),
-                             f'users.{user.id}.stats.voicetime': voicetime}
+                    query = {f'users.{user.id}.stats.voicetime': voicetime}
 
                     return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
-                                                           action='$push', filter={'call_id': update.call.id},
+                                                           action='$inc', filter={'call_id': update.call.id},
                                                            query=query, upsert=False)
 
         """
