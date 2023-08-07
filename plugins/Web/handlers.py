@@ -197,13 +197,16 @@ class WebServerHandler:
             return Response(status=403)
 
         text = data.get('text', '')
+        pin = data.get('pin', '')
         if text:
             try:
-                await self.pyrogramBot.bot.send_message(
+                message = await self.pyrogramBot.bot.send_message(
                     chat_id=chat,
                     text=text,
                     disable_web_page_preview=True,
                 )
+                if pin == 'true':
+                    await message.pin()
             except FloodWait as e:
                 await asyncio.sleep(e.value)
 
@@ -217,18 +220,6 @@ class WebServerHandler:
         # chat_id = request.match_info['chat_id']
         chat = request.match_info['chat']
 
-        # try:
-        #     user = await self.pyrogramBot.user.get_users(user)
-        #     chat = await self.pyrogramBot.user.get_chat(chat)
-        #     member = await self.pyrogramBot.user.get_chat_member(chat.id, user.id)
-        # except (errors.UsernameInvalid, errors.PeerIdInvalid, errors.ChatInvalid):
-        #     user = None
-        #     chat = None
-        #     member = None
-        #
-        # if not user or not chat or not member:
-        #     return Response(status=422)
-
         try:
             data = await request.json()
         except JSONDecodeError:
@@ -241,12 +232,10 @@ class WebServerHandler:
             member = await self.pyrogramBot.user.get_chat_member(chat, user)
             chat = await self.pyrogramBot.user.get_chat(chat)
             user = await self.pyrogramBot.user.get_users(user)
-        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
-            member = None
-            user = None
-            chat = None
 
-        if not member or not user or not chat:
+            date = datetime.now(tz=utc)
+            date = date.strftime('%Y-%m-%d %H:%M:%S')
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
             return Response(status=422)
 
         query = ""
@@ -261,25 +250,21 @@ class WebServerHandler:
         document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                    filter={'chat_id': chat.id}, query=query)
 
-        message_xp = document.get('xp', {}).get('message_xp', 100)
-        voice_xp = document.get('xp', {}).get('voice_xp', 50)
-        xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
+        # message_xp = document.get('xp', {}).get('message_xp', 100)
+        # voice_xp = document.get('xp', {}).get('voice_xp', 50)
+        # xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
-        seconds = document.get('users', {}).get(user.id, {}).get('stats', {}).get('voicetime', 0)
+        # voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
-        hours_in_voice_channel = round(seconds / 3600, 1)
-        xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
+        # xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
 
-        lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
-        lvl = int(lvl) - 1
-
-        xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
-
-        xp_have = int(xp - xp_for_level)
-        xp_need = (lvl + 1) * xp_factor
-
-        date = datetime.now(tz=utc)
-        date = date.strftime('%Y-%m-%d %H:%M:%S')
+        # lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
+        # lvl = int(lvl) - 1
+        #
+        # xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
+        #
+        # xp_have = int(xp - xp_for_level)
+        # xp_need = (lvl + 1) * xp_factor
 
         member_parameters = {
             # 'status': member.status,
@@ -295,12 +280,13 @@ class WebServerHandler:
             'can_be_edited': member.can_be_edited,
             # 'permissions': member.permissions,
             # 'privileges', member.privileges,
-            'messages_count': messages_count,
-            'lvl': lvl,
-            'xp_have': xp_have,
-            'xp_need': xp_need,
-            'xp': xp,
-            'hours_in_voice_channel': hours_in_voice_channel,
+            # 'messages_count': messages_count,
+            # 'lvl': lvl,
+            # 'xp_have': xp_have,
+            # 'xp_need': xp_need,
+            # 'xp': xp,
+            # 'xp_factor': xp_factor,
+            # 'voicetime': voicetime,
             'date': date,
         }
 
@@ -332,14 +318,11 @@ class WebServerHandler:
 
         try:
             user = await self.pyrogramBot.user.get_users(user)
+
+            date = datetime.now(tz=utc)
+            date = date.strftime('%Y-%m-%d %H:%M:%S')
         except (errors.UsernameInvalid, errors.PeerIdInvalid, errors.UserInvalid):
-            user = None
-
-        if not user:
             return Response(status=422)
-
-        date = datetime.now(tz=utc)
-        date = date.strftime('%Y-%m-%d %H:%M:%S')
 
         user_parameters = {
             'id': user.id,
@@ -392,18 +375,21 @@ class WebServerHandler:
 
         try:
             chat = await self.pyrogramBot.user.get_chat(chat)
-        except (errors.ChatInvalid, errors.PeerIdInvalid):
-            chat = None
 
-        if not chat:
+            date = datetime.now(tz=utc)
+            date = date.strftime('%Y-%m-%d %H:%M:%S')
+        except (errors.ChatInvalid, errors.PeerIdInvalid):
             return Response(status=422)
 
-        members_parameters = {}
-
-        query = {'_id': 0, f'users': 1, 'xp': 1}
+        query = {'_id': 0, 'users': 1, 'xp': 1}
         document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                    filter={'chat_id': chat.id}, query=query)
 
+        message_xp = document.get('xp', {}).get('message_xp', 100)
+        voice_xp = document.get('xp', {}).get('voice_xp', 50)
+        xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
+
+        members_parameters = {}
         async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
             # Search only for userbots
             query = ""
@@ -413,33 +399,29 @@ class WebServerHandler:
                                                                                from_user=member.user.id,
                                                                                query=query, filter=query_filter)
 
-            message_xp = document.get('xp', {}).get('message_xp', 100)
-            voice_xp = document.get('xp', {}).get('voice_xp', 50)
-            xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
+            voicetime = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('voicetime', 0)
 
-            seconds = document.get('users', {}).get(member.user.id, {}).get('stats', {}).get('voicetime', 0)
+            xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
 
-            hours_in_voice_channel = round(seconds / 3600, 1)
-            xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
-
-            lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
-            lvl = int(lvl) - 1
-
-            xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
-
-            xp_have = int(xp - xp_for_level)
-            xp_need = (lvl + 1) * xp_factor
+            # lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
+            # lvl = int(lvl) - 1
+            #
+            # xp_for_level = lvl / 2 * (2 * xp_factor + (lvl - 1) * xp_factor)
+            #
+            # xp_have = int(xp - xp_for_level)
+            # xp_need = (lvl + 1) * xp_factor
 
             date = datetime.now(tz=utc)
             date = date.strftime('%Y-%m-%d %H:%M:%S')
 
             member_parameters = {
                 'messages_count': messages_count,
-                'lvl': lvl,
-                'xp_have': xp_have,
-                'xp_need': xp_need,
+                # 'lvl': lvl,
+                # 'xp_have': xp_have,
+                # 'xp_need': xp_need,
                 'xp': xp,
-                'hours_in_voice_channel': hours_in_voice_channel,
+                'xp_factor': xp_factor,
+                'voicetime': voicetime,
                 'joined_date': json.dumps(member.joined_date, default=json_util.default),
                 'custom_title': member.custom_title,
                 'until_date': json.dumps(member.until_date, default=json_util.default),
@@ -465,9 +447,6 @@ class WebServerHandler:
             # Position for member in chat by xp
             user_id = stat[0]
             members_parameters[user_id]['position'] = i
-
-        date = datetime.now(tz=utc)
-        date = date.strftime('%Y-%m-%d %H:%M:%S')
 
         chat_parameters = {
             'id': chat.id,
@@ -495,6 +474,9 @@ class WebServerHandler:
             # 'restrictions': chat.restrictions,
             # 'permissions': chat.permissions,
             'distance': chat.distance,
+            'xp_factor': xp_factor,
+            'message_xp': message_xp,
+            'voice_xp': voice_xp,
             # 'linked_chat': chat.linked_chat,
             # 'send_as_chat': chat.send_as_chat,
             # 'available_reactions': chat.available_reactions,
@@ -534,11 +516,6 @@ class WebServerHandler:
             chat = await self.pyrogramBot.user.get_chat(chat)
             user = await self.pyrogramBot.user.get_users(user)
         except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
-            member = None
-            user = None
-            chat = None
-
-        if not member or not user or not chat:
             return Response(status=422)
 
         if action == 'demote_chat_member':
