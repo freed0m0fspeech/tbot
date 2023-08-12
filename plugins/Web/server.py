@@ -81,8 +81,7 @@ class WebServer:
             try:
                 await self.pyrogramBot.user.start()
             except ConnectionError:
-                # TODO connection error
-                pass
+                print('User connection error')
 
             try:
                 await self.pyrogramBot.bot.start()
@@ -92,7 +91,7 @@ class WebServer:
                 await asyncio.sleep(e.value)
                 await self.pyrogramBot.bot.start()
             except ConnectionError:
-                pass
+                print('Bot connection error')
 
             await self.pyrogramBot.set_default_commands()
             await self.pyrogramBot.set_default_commands_ru()
