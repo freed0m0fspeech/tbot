@@ -38,8 +38,8 @@ async def main():
     GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
     GOOGLE_ENGINE_ID = os.getenv('GOOGLE_ENGINE_ID')
 
-    TWITCH_APP_ID = os.getenv('TWITCH_APP_ID')
-    TWITCH_APP_SECRET = os.getenv('TWITCH_APP_SECRET')
+    # TWITCH_APP_ID = os.getenv('TWITCH_APP_ID')
+    # TWITCH_APP_SECRET = os.getenv('TWITCH_APP_SECRET')
 
     # no host specified in headers or uri fix http://
     WEBAPP_HOST = '0.0.0.0'
