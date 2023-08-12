@@ -1,13 +1,17 @@
+<p align="left"> 
+  <img src="https://github.com/freed0m0fspeech/tbot/actions/workflows/fly.yml/badge.svg" />
+</p>
+
 telegram-bot-freed0m0fspeech
 ========================
 
 Telegram bot for Freedom of speech, Python project.
 
-`Learn more about bot <https://github.com/pr0stre1/tbot/releases>`_.
+Learn more about [bot](https://github.com/pr0stre1/tbot/releases).
 
 ---------------
 
-Additional info about ``tbot`` file, you can find `here <https://github.com/pr0stre1/tbot/releases>`_.
+Additional info about ``tbot`` file, you can find [here](https://github.com/pr0stre1/tbot/releases).
 
 ---------------
 
