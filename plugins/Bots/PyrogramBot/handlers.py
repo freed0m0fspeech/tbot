@@ -1108,19 +1108,11 @@ class PyrogramBotHandler:
                                                                    user_name=user_name)
                                                                )
 
-            query = {'_id': 0, f'users.{user.id}.stats': 1, 'xp': 1}
+            query = {'_id': 0, f'users': 1, 'xp': 1}
             document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                        filter={'chat_id': chat.id}, query=query)
-            try:
-                stats = document['users'][f'{user.id}']['stats']
 
-                seconds = 0.0
-                for voicetime in stats['voicetime']:
-                    seconds += voicetime
-
-                seconds = round(seconds)
-            except(IndexError, KeyError, TypeError):
-                seconds = 0
+            voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
             query = ""
             query_filter = MessagesFilter.EMPTY
@@ -1131,13 +1123,13 @@ class PyrogramBotHandler:
 
             user_mention = f"[@{user.username}](tg://user?id={user.id})"
             # date = datetime.timedelta(seconds=seconds)
-            hours_in_voice_channel = round(seconds / 3600, 1)
+            hours_in_voice_channel = round(voicetime / 3600, 1)
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
-            xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
+            xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
 
             lvl = 0.5 + math.sqrt(1 + 8 * (xp) / (xp_factor)) / 2
             lvl = int(lvl) - 1
@@ -1187,21 +1179,10 @@ class PyrogramBotHandler:
                                                                                    query=query, filter=query_filter)
 
                 user = member.user
-                try:
-                    voice_stats = document['users'][f'{user.id}']['stats']
+                voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
-                    seconds = 0
-                    for voicetime in voice_stats['voicetime']:
-                        seconds += voicetime
-
-                    seconds = round(seconds)
-
-                    # date = datetime.timedelta(seconds=seconds)
-                except(IndexError, KeyError, TypeError):
-                    seconds = 0
-
-                xp = (messages_count * message_xp) + ((seconds // 60) * voice_xp)
-                stat = (user, messages_count, seconds, xp)
+                xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+                stat = (user, messages_count, voicetime, xp)
                 stats.append(stat)
 
             # sort data by id=3 value - xp
@@ -1217,13 +1198,13 @@ class PyrogramBotHandler:
             top_list = "{top_members_text} {chat_title}\n\n".format(top_members_text=_("Top members of"),
                                                                     chat_title=chat.title)
             i = 0
-            for user, messages_count, seconds, xp in stats[0:10]:
+            for user, messages_count, voicetime, xp in stats[0:10]:
                 # date = datetime.timedelta(seconds=seconds)
                 i += 1
 
                 user_mention = f"[@{user.username}](tg://user?id={user.id})"
 
-                hours_in_voice_channel = round(seconds / 3600, 1)
+                hours_in_voice_channel = round(voicetime / 3600, 1)
 
                 lvl = 0.5 + math.sqrt(1 + 8 * (xp) / (xp_factor)) / 2
                 lvl = int(lvl) - 1
