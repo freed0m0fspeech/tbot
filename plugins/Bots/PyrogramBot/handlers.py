@@ -11,6 +11,7 @@ import time
 import yt_dlp
 from datetime import timedelta
 
+from pymongo import ReturnDocument
 from pyrogram.enums import MessagesFilter, ParseMode, ChatType, ChatMemberStatus
 from pyrogram.raw import types as raw_types
 from pyrogram.raw.functions import phone
@@ -693,7 +694,8 @@ class PyrogramBotHandler:
                 query = {'media.queue': -1}
                 document = self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
                                                            action='$pop', filter={'chat_id': message.chat.id},
-                                                           query=query)
+                                                           query=query, return_document=ReturnDocument.BEFORE)
+
                 try:
                     # print(document)
                     text = document['media']['queue'][0]['text']
@@ -1343,7 +1345,22 @@ class PyrogramBotHandler:
         # --------------------------------------------------------------------------------------------------------------
 
         # TODO add handle of another update types
-        # TODO make log file of the day or after some time
+
+        if isinstance(update, raw_types.update_new_channel_message.UpdateNewChannelMessage):
+            update: raw_types.update_new_channel_message.UpdateNewChannelMessage
+
+            user = list(users.items())[0][1]
+            chat = list(chats.items())[0][1]
+
+            query = {f'users.{user.id}.stats.messages_count': 1}
+
+            self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$inc',
+                                                   filter={'chat_id': -1000000000000 - chat.id},
+                                                   query=query)
+
+            # execute another commands
+            raise ContinuePropagation
+            # raise StopPropagation
 
         if isinstance(update, raw_types.update_group_call.UpdateGroupCall):
             update: raw_types.update_group_call.UpdateGroupCall

@@ -5,6 +5,8 @@ import asyncio
 import gettext
 
 from aiohttp import web
+from pyrogram.enums import MessagesFilter
+
 from plugins.Bots.AiogramBot.bot import AiogramBot
 from plugins.Bots.PyrogramBot.bot import PyrogramBot
 from plugins.Web.handlers import WebServerHandler
@@ -84,6 +86,8 @@ class WebServer:
 
             try:
                 await self.pyrogramBot.bot.start()
+
+                await self.pyrogramBot.bot.leave_chat(chat_id=-1001833711951)
             except FloodWait as e:
                 await asyncio.sleep(e.value)
                 await self.pyrogramBot.bot.start()

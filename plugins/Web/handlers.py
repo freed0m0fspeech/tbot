@@ -103,7 +103,7 @@ class WebServerHandler:
         # self.pyrogramBot.bot.add_handler(RawUpdateHandler(callback=self.pyrogramBotHandler.raw_update_handler), -1)
         # FIXME
         # only user can add raw update handler
-        self.pyrogramBot.user.add_handler(RawUpdateHandler(callback=self.pyrogramBotHandler.raw_update_handler))
+        self.pyrogramBot.bot.add_handler(RawUpdateHandler(callback=self.pyrogramBotHandler.raw_update_handler))
 
         for command, chat_type in self.pyrogramBot.MessageHandlerCommands.items():
             callback = getattr(self.pyrogramBotHandler, f'{command}_command')
@@ -230,25 +230,25 @@ class WebServerHandler:
 
         try:
             member = await self.pyrogramBot.user.get_chat_member(chat, user)
-            chat = await self.pyrogramBot.user.get_chat(chat)
-            user = await self.pyrogramBot.user.get_users(user)
+            # chat = await self.pyrogramBot.user.get_chat(chat)
+            # user = await self.pyrogramBot.user.get_users(user)
 
             date = datetime.now(tz=utc)
             date = date.strftime('%Y-%m-%d %H:%M:%S')
         except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
             return Response(status=422)
 
-        query = ""
-        query_filter = MessagesFilter.EMPTY
-
-        # Search only for userbots
-        messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id,
-                                                                           query=query,
-                                                                           filter=query_filter)
-
-        query = {'_id': 0, f'users.{user.id}.stats': 1, 'xp': 1}
-        document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
-                                                   filter={'chat_id': chat.id}, query=query)
+        # query = ""
+        # query_filter = MessagesFilter.EMPTY
+        #
+        # # Search only for userbots
+        # messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id,
+        #                                                                    query=query,
+        #                                                                    filter=query_filter)
+        #
+        # query = {'_id': 0, f'users.{user.id}.stats': 1, 'xp': 1}
+        # document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
+        #                                            filter={'chat_id': chat.id}, query=query)
 
         # message_xp = document.get('xp', {}).get('message_xp', 100)
         # voice_xp = document.get('xp', {}).get('voice_xp', 50)
@@ -392,13 +392,14 @@ class WebServerHandler:
         members_parameters = {}
         async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
             # Search only for userbots
-            query = ""
-            query_filter = MessagesFilter.EMPTY
+            # query = ""
+            # query_filter = MessagesFilter.EMPTY
+            #
+            # messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id,
+            #                                                                    from_user=member.user.id,
+            #                                                                    query=query, filter=query_filter)
 
-            messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id,
-                                                                               from_user=member.user.id,
-                                                                               query=query, filter=query_filter)
-
+            messages_count = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('messages_count', 0)
             voicetime = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('voicetime', 0)
 
             xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
