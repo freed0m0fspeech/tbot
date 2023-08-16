@@ -1,5 +1,6 @@
-<p align="left"> 
-  <img src="https://github.com/freed0m0fspeech/tbot/actions/workflows/fly.yml/badge.svg" />
+<p align="left">
+    <img src="https://github.com/freed0m0fspeech/tbot/actions/workflows/fly.yml/badge.svg" />
+    <img src="https://uptime.betterstack.com/status-badges/v1/monitor/sjz9.svg">
 </p>
 
 telegram-bot-freed0m0fspeech
@@ -42,3 +43,15 @@ Inline commands:
   * @F0s_bot /play @sc@ [text] - Search for media in SoundCloud
   * @F0s_bot /play @yt@ [text] - Search for media in YouTube
   * @F0S_bot /play @video@ [text] - Search for video
+
+---------------
+
+Functionality:
+
+  * Music player
+  * Stats (voicetime, messages count)
+  * Scheduled tasks
+  * DataBase
+  * Multiple DataBases support
+  * Speech to text
+  * Lyrics

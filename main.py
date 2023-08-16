@@ -4,12 +4,13 @@ import os
 from aiohttp.web import AppRunner, TCPSite
 from dotenv import load_dotenv
 from pyrogram import idle
+from jobs.updater import start
 from plugins.Bots.PyrogramBot.bot import PyrogramBot
 from plugins.Web.server import WebServer
-from plugins.DataBase.mongo import MongoDataBase
+from utils import dataBases
 from plugins.Google.google import Google
 
-load_dotenv()
+mongoDataBase = dataBases.mongodb_client
 
 
 async def main():
@@ -25,9 +26,9 @@ async def main():
     TOKEN = os.getenv('TOKEN')
     # HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
-    MONGODATABASE_USER = os.getenv('MONGODATABASE_USER')
-    MONGODATABASE_PASSWORD = os.getenv('MONGODATABASE_PASSWORD')
-    MONGODATABASE_HOST = os.getenv('MONGODATABASE_HOST')
+    # MONGODATABASE_USER = os.getenv('MONGODATABASE_USER')
+    # MONGODATABASE_PASSWORD = os.getenv('MONGODATABASE_PASSWORD')
+    # MONGODATABASE_HOST = os.getenv('MONGODATABASE_HOST')
 
     USER_SESSION = os.getenv('USER_SESSION')
     # BOT_SESSION = os.getenv('BOT_SESSION')
@@ -52,7 +53,8 @@ async def main():
     # WEBHOOK_PATH_TWITCH = f'/webhook/{TOKEN}/twitch'
     # WEBHOOK_URL_TWITCH = f'{WEBHOOK_HOST}{WEBHOOK_PATH_TWITCH}'
 
-    mongoDataBase = MongoDataBase(host=MONGODATABASE_HOST, user=MONGODATABASE_USER, passwd=MONGODATABASE_PASSWORD)
+    # mongoDataBase = MongoDataBase(host=MONGODATABASE_HOST, user=MONGODATABASE_USER, passwd=MONGODATABASE_PASSWORD)
+
 
     # aiogramBot = AiogramBot(token=TOKEN, webhook_path=WEBHOOK_PATH_AIOGRAM, webhook_url=WEBHOOK_URL_AIOGRAM)
 
@@ -103,6 +105,10 @@ async def main():
 
     site = TCPSite(runner=runner, host=WEBAPP_HOST, port=WEBAPP_PORT, shutdown_timeout=60)
     await site.start()
+
+    # if not os.getenv('DEBUG', '0').lower() in ['true', 't', '1']:
+    #     start()
+
     await idle()
     await runner.cleanup()
 

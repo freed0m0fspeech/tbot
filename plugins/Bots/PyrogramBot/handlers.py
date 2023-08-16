@@ -36,6 +36,12 @@ class PyrogramBotHandler:
         self.pyrogramBot = pyrogramBot
         self.groupCall = pyrogramBot.groupCall
         self.mongoDataBase = mongoDataBase
+        # Cached chats
+        # self.chats = {}
+        #
+        # query = {'_id': 0, 'chat_id': 1, 'users': 1, 'media': 1, 'call_id': 1, 'xp': 1}
+        # for chat in self.mongoDataBase.get_documents(database_name='dbot', collection_name='guilds', query=query):
+        #     self.chats[chat.get('chat_id', '')] = chat
 
     #
     # Horoscope
@@ -596,11 +602,12 @@ class PyrogramBotHandler:
 
         if count == 0:
             query = {'media.queue': -1}
-            self.mongoDataBase.update_field(database_name='tbot',
+            if self.mongoDataBase.update_field(database_name='tbot',
                                             collection_name='chats',
                                             action='$unset',
                                             filter={'chat_id': message.chat.id},
-                                            query=query)
+                                            query=query) is None:
+                print('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{text}".format(text=_("Media queue cleared"))
@@ -609,11 +616,12 @@ class PyrogramBotHandler:
             # a value of -1 to remove the first element of an array and 1 to remove the last element in an array.
             query = {'media.queue': int(-1 * math.copysign(1, count))}
             for i in range(abs(count)):
-                self.mongoDataBase.update_field(database_name='tbot',
+                if self.mongoDataBase.update_field(database_name='tbot',
                                                 collection_name='chats',
                                                 action='$pop',
                                                 filter={'chat_id': message.chat.id},
-                                                query=query)
+                                                query=query) is None:
+                    print('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{count} {tracks_cleared}".format(count=abs(count),
@@ -662,8 +670,9 @@ class PyrogramBotHandler:
             text = message.text.split(" ", maxsplit=1)[1]
             query = {'media.queue': {'text': text, 'user': message.from_user.id}}
 
-            self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$push',
-                                            filter={'chat_id': message.chat.id}, query=query)
+            if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$push',
+                                            filter={'chat_id': message.chat.id}, query=query) is None:
+                print('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{text}".format(text=_("Successfully added to queue"))
@@ -696,14 +705,18 @@ class PyrogramBotHandler:
                                                            action='$pop', filter={'chat_id': message.chat.id},
                                                            query=query, return_document=ReturnDocument.BEFORE)
 
+                if not document:
+                    return
+
                 try:
                     # print(document)
                     text = document['media']['queue'][0]['text']
                     user = document['media']['queue'][0]['user']
                 except (IndexError, KeyError):
                     query = {'media.now': 1}
-                    self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$unset',
-                                                    filter={'chat_id': message.chat.id}, query=query)
+                    if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$unset',
+                                                    filter={'chat_id': message.chat.id}, query=query) is None:
+                        print('Something wrong with DataBase')
                     return
 
                 # queue = document['media']['queue']
@@ -779,8 +792,9 @@ class PyrogramBotHandler:
                                        'duration': now['duration'],
                                        'user': now['user']}}
 
-                self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
-                                                filter=filter, query=query)
+                if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
+                                                filter=filter, query=query) is None:
+                    print('Something wrong with DataBase')
 
                 # print('start playing')
                 if info.get('ext') in self.groupCall.audio_formats:
@@ -1112,6 +1126,9 @@ class PyrogramBotHandler:
             document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                        filter={'chat_id': chat.id}, query=query)
 
+            if not document:
+                print('Something wrong with DataBase')
+
             voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
             query = ""
@@ -1164,6 +1181,9 @@ class PyrogramBotHandler:
             query = {'_id': 0, f'users': 1, 'xp': 1}
             document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
                                                        filter={'chat_id': chat.id}, query=query)
+
+            if not document:
+                print('Something wrong with DataBase')
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
@@ -1327,6 +1347,7 @@ class PyrogramBotHandler:
 
         # TODO add handle of another update types
 
+        # New message in channel
         if isinstance(update, raw_types.update_new_channel_message.UpdateNewChannelMessage):
             update: raw_types.update_new_channel_message.UpdateNewChannelMessage
 
@@ -1335,9 +1356,10 @@ class PyrogramBotHandler:
 
             query = {f'users.{user.id}.stats.messages_count': 1}
 
-            self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$inc',
+            if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$inc',
                                                    filter={'chat_id': -1000000000000 - chat.id},
-                                                   query=query)
+                                                   query=query) is None:
+                print('Something wrong with DataBase. Messages count not increased')
 
             # execute another commands
             raise ContinuePropagation
@@ -1353,6 +1375,7 @@ class PyrogramBotHandler:
             #    raise ContinuePropagation
 
             try:
+                # New created group call
                 version = update.call.version
 
                 if version == 1:
@@ -1362,6 +1385,7 @@ class PyrogramBotHandler:
                                                            filter={'chat_id': -1000000000000 - update.chat_id},
                                                            query=query)
             except AttributeError:
+                # Group call ended
                 query = {f'call_id': 1}
 
                 return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
@@ -1380,6 +1404,7 @@ class PyrogramBotHandler:
             for participant in update.participants:
                 participant: raw_types.GroupCallParticipant
                 if participant.left:
+                    # User leaves group call
                     voicetime = time.time() - participant.date
 
                     user = list(users.items())[0][1]
