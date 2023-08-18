@@ -1362,7 +1362,6 @@ class PyrogramBotHandler:
                 print('Something wrong with DataBase. Messages count not increased')
 
             # execute another commands
-            raise ContinuePropagation
             # raise StopPropagation
 
         if isinstance(update, raw_types.update_group_call.UpdateGroupCall):
@@ -1420,6 +1419,8 @@ class PyrogramBotHandler:
                     return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
                                                            action='$inc', filter={'call_id': update.call.id},
                                                            query=query)
+
+        raise ContinuePropagation
 
         """
         try:
