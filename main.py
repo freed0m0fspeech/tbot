@@ -44,7 +44,7 @@ async def main():
 
     # no host specified in headers or uri fix http://
     WEBAPP_HOST = '0.0.0.0'
-    WEBAPP_PORT = int(os.getenv('PORT', '80'))
+    WEBAPP_PORT = int(os.getenv('PORT', '8000'))
 
     # ------------------------------------------------------------------------------------------------------------------
 
