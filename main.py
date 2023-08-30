@@ -106,8 +106,9 @@ async def main():
     site = TCPSite(runner=runner, host=WEBAPP_HOST, port=WEBAPP_PORT, shutdown_timeout=60)
     await site.start()
 
-    # if not os.getenv('DEBUG', '0').lower() in ['true', 't', '1']:
-    #     start()
+    # Start scheduler
+    if not os.getenv('DEBUG', '0').lower() in ['true', 't', '1']:
+        start()
 
     await idle()
     await runner.cleanup()

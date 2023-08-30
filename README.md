@@ -8,11 +8,11 @@ telegram-bot-freed0m0fspeech
 
 Telegram bot for Freedom of speech, Python project.
 
-Learn more about [bot](https://github.com/pr0stre1/tbot/releases).
+Learn more about [bot](https://github.com/freed0m0fspeech/tbot/releases).
 
 ---------------
 
-Additional info about ``tbot`` file, you can find [here](https://github.com/pr0stre1/tbot/releases).
+Additional info about ``tbot``, you can find [here](https://github.com/freed0m0fspeech/tbot/releases).
 
 ---------------
 
@@ -55,3 +55,4 @@ Functionality:
   * Multiple DataBases support
   * Speech to text
   * Lyrics
+  * Application cache

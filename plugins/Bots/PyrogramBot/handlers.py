@@ -24,6 +24,7 @@ from plugins.Helpers import youtube_dl, media_convertor
 from pyrogram.client import Client
 from plugins.DataBase.mongo import MongoDataBase
 from plugins.Google.google import Google
+from utils import cache
 
 
 class PyrogramBotHandler:
@@ -1354,12 +1355,18 @@ class PyrogramBotHandler:
             user = list(users.items())[0][1]
             chat = list(chats.items())[0][1]
 
-            query = {f'users.{user.id}.stats.messages_count': 1}
+            # query = {f'users.{user.id}.stats.messages_count': 1}
+            #
+            # if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$inc',
+            #                                        filter={'chat_id': -1000000000000 - chat.id},
+            #                                        query=query) is None:
+            #     print('Something wrong with DataBase. Messages count not increased')
 
-            if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$inc',
-                                                   filter={'chat_id': -1000000000000 - chat.id},
-                                                   query=query) is None:
-                print('Something wrong with DataBase. Messages count not increased')
+            messages_count = 1
+            messages_count += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
+                'messages_count', 0)
+
+            cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
 
             # execute another commands
             # raise StopPropagation
@@ -1407,6 +1414,7 @@ class PyrogramBotHandler:
                     voicetime = time.time() - participant.date
 
                     user = list(users.items())[0][1]
+                    chat = list(chats.items())[0][1]
 
                     # getGroupCall = phone.GetGroupCall(call=update.call, limit=1)
                     # groupCall = await self.pyrogramBot.user.send(getGroupCall)
@@ -1414,11 +1422,14 @@ class PyrogramBotHandler:
                     # print(groupCall)
                     # chat = await self.pyrogramBot.bot.get_chat(chat_id=groupCall.title)
 
-                    query = {f'users.{user.id}.stats.voicetime': voicetime}
+                    # query = {f'users.{user.id}.stats.voicetime': voicetime}
+                    #
+                    # return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
+                    #                                        action='$inc', filter={'call_id': update.call.id},
+                    #                                        query=query)
 
-                    return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
-                                                           action='$inc', filter={'call_id': update.call.id},
-                                                           query=query)
+                    voicetime += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get('voicetime', 0)
+                    cache.stats[-1000000000000 - chat.id]['members'][user.id]['voicetime'] = voicetime
 
         raise ContinuePropagation
 

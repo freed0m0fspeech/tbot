@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 
 from dotenv import load_dotenv
 from plugins.DataBase.mongo import (
@@ -26,13 +27,14 @@ class DataBases():
 class Cache():
     def __init__(self, databases: DataBases):
         # Cached guilds
-        self.chats = {}
-
-        query = {'_id': 0}
-        for chat in databases.mongodb_client.get_documents(database_name='tbot', collection_name='chats', query=query):
-            self.chats[chat.get('id', '')] = chat
+        # self.chats = {}
+        #
+        # query = {'_id': 0}
+        # for chat in databases.mongodb_client.get_documents(database_name='tbot', collection_name='chats', query=query):
+        #     self.chats[chat.get('id', '')] = chat
+        self.stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))))
 
 
 dataBases = DataBases()
-# cache = Cache(dataBases)
+cache = Cache(dataBases)
 # mongoDataBase = dataBases.mongodb_client
