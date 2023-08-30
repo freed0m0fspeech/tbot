@@ -1,6 +1,6 @@
 import os
-from collections import defaultdict
 
+from collections import defaultdict
 from dotenv import load_dotenv
 from plugins.DataBase.mongo import (
     MongoDataBase
