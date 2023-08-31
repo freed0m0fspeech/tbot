@@ -103,7 +103,7 @@ class WebServerHandler:
         # self.pyrogramBot.bot.add_handler(RawUpdateHandler(callback=self.pyrogramBotHandler.raw_update_handler), -1)
         # FIXME
         # only user can add raw update handler
-        self.pyrogramBot.bot.add_handler(RawUpdateHandler(callback=self.pyrogramBotHandler.raw_update_handler))
+        self.pyrogramBot.user.add_handler(RawUpdateHandler(callback=self.pyrogramBotHandler.raw_update_handler))
 
         for command, chat_type in self.pyrogramBot.MessageHandlerCommands.items():
             callback = getattr(self.pyrogramBotHandler, f'{command}_command')

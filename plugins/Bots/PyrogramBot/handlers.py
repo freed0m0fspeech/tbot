@@ -1414,7 +1414,7 @@ class PyrogramBotHandler:
                     voicetime = time.time() - participant.date
 
                     user = list(users.items())[0][1]
-                    chat = list(chats.items())[0][1]
+                    # chat = list(chats.items())[0][1]
 
                     # getGroupCall = phone.GetGroupCall(call=update.call, limit=1)
                     # groupCall = await self.pyrogramBot.user.send(getGroupCall)
@@ -1428,8 +1428,12 @@ class PyrogramBotHandler:
                     #                                        action='$inc', filter={'call_id': update.call.id},
                     #                                        query=query)
 
-                    voicetime += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get('voicetime', 0)
-                    cache.stats[-1000000000000 - chat.id]['members'][user.id]['voicetime'] = voicetime
+                    tbot_document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats', filter={'call_id': update.call.id}, query={'_id': 0, 'chat_id': 1})
+                    chat_id = tbot_document.get('chat_id', '')
+
+                    if chat_id:
+                        voicetime += cache.stats.get(chat_id, {}).get('members', {}).get(user.id, {}).get('voicetime', 0)
+                        cache.stats[chat_id]['members'][user.id]['voicetime'] = voicetime
 
         raise ContinuePropagation
 

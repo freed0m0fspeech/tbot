@@ -31,7 +31,8 @@ class Cache():
         #
         # query = {'_id': 0}
         # for chat in databases.mongodb_client.get_documents(database_name='tbot', collection_name='chats', query=query):
-        #     self.chats[chat.get('id', '')] = chat
+        #     self.chats[chat.get('chat_id', '')] = chat
+
         self.stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))))
 
 

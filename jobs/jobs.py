@@ -28,7 +28,7 @@ def stats_sync(query=None, filter=None):
     try:
         for chat_id in cache.stats.keys():
             query = {}
-            filter = {'id': chat_id}
+            filter = {'chat_id': chat_id}
 
             for user_id in cache.stats.get(chat_id, {}).get('members', {}).keys():
                 try:
