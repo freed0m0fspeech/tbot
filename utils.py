@@ -33,6 +33,7 @@ class Cache():
         # for chat in databases.mongodb_client.get_documents(database_name='tbot', collection_name='chats', query=query):
         #     self.chats[chat.get('chat_id', '')] = chat
 
+        # count of defaultdict - count inner dicts
         self.stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))))
 
 

@@ -5,6 +5,7 @@ import math
 import os
 import random
 import pyrogram
+import pytz
 import speech_recognition
 import time
 # import youtube_dl
@@ -1362,11 +1363,22 @@ class PyrogramBotHandler:
             #                                        query=query) is None:
             #     print('Something wrong with DataBase. Messages count not increased')
 
-            messages_count = 1
-            messages_count += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
-                'messages_count', 0)
+            last_message = cache.stats[-1000000000000 - chat.id]['members'][users.id]['last_message']
+            last_message_seconds = None
+            if last_message:
+                last_message_seconds = (datetime.datetime.now(tz=pytz.utc).replace(tzinfo=None) - datetime.datetime.strptime(last_message, '%Y-%m-%d %H:%M:%S')).total_seconds()
 
-            cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
+            # Count messages only every 60 seconds
+            if not last_message_seconds or last_message_seconds > 60:
+                date = datetime.datetime.now(tz=pytz.utc)
+                date = date.strftime('%Y-%m-%d %H:%M:%S')
+
+                messages_count = 1
+                messages_count += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
+                    'messages_count', 0)
+
+                cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
+                cache.stats[-1000000000000 - chat.id]['members'][user.id]['last_message'] = date
 
             # execute another commands
             # raise StopPropagation
