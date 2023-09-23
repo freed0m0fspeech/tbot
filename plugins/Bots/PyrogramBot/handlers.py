@@ -1363,7 +1363,7 @@ class PyrogramBotHandler:
             #                                        query=query) is None:
             #     print('Something wrong with DataBase. Messages count not increased')
 
-            last_message = cache.stats[-1000000000000 - chat.id]['members'][users.id]['last_message']
+            last_message = cache.stats[-1000000000000 - chat.id]['members'][user.id]['last_message']
             last_message_seconds = None
             if last_message:
                 last_message_seconds = (datetime.datetime.now(tz=pytz.utc).replace(tzinfo=None) - datetime.datetime.strptime(last_message, '%Y-%m-%d %H:%M:%S')).total_seconds()
