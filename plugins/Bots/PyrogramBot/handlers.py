@@ -1379,16 +1379,22 @@ class PyrogramBotHandler:
                             datetime.datetime.now(tz=pytz.utc).replace(tzinfo=None) - datetime.datetime.strptime(
                         last_message, '%Y-%m-%d %H:%M:%S')).total_seconds()
 
+            messages_count = 1
+            messages_count += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
+                'messages_count', 0)
+
+            cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
+
             # Count messages only every 60 seconds
             if not last_message_seconds or last_message_seconds > 60:
                 date = datetime.datetime.now(tz=pytz.utc)
                 date = date.strftime('%Y-%m-%d %H:%M:%S')
 
-                messages_count = 1
-                messages_count += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
-                    'messages_count', 0)
+                messages_count_xp = 1
+                messages_count_xp += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
+                    'messages_count_xp', 0)
 
-                cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
+                cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count_xp'] = messages_count_xp
                 cache.stats[-1000000000000 - chat.id]['members'][user.id]['last_message'] = date
 
             # execute another commands

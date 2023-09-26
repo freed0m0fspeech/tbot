@@ -426,7 +426,8 @@ class WebServerHandler:
             messages_count = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('messages_count', 0)
             voicetime = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('voicetime', 0)
 
-            xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+            # xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+            xp = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('xp', 0)
 
             # lvl = 0.5 + sqrt(1 + 8 * (xp) / (xp_factor)) / 2
             # lvl = int(lvl) - 1

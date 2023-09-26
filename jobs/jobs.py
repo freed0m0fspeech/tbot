@@ -27,8 +27,13 @@ def stats_sync(query=None, filter=None):
 
     try:
         for chat_id in cache.stats.keys():
-            query = {}
+            query = {'xp': 1}
             filter = {'chat_id': chat_id}
+            document = mongoDataBase.get_document(database_name='tbot',
+                                                  collection_name='chats',
+                                                  filter=filter,
+                                                  query=query)
+            query = {}
 
             for user_id in cache.stats.get(chat_id, {}).get('members', {}).keys():
                 try:
@@ -47,6 +52,20 @@ def stats_sync(query=None, filter=None):
 
                 if messages_count:
                     query[f'users.{user_id}.stats.messages_count'] = messages_count
+
+                try:
+                    messages_count_xp = cache.stats.get(chat_id, {}).get('members', {}).get(user_id, {}).pop(
+                        'messages_count_xp')
+                except Exception as e:
+                    messages_count_xp = 0
+
+                if not messages_count_xp == 0 or voicetime:
+                    message_xp = document.get('xp', {}).get('message_xp', 100)
+                    voice_xp = document.get('xp', {}).get('voice_xp', 50)
+
+                    xp = (messages_count_xp * message_xp) + ((voicetime // 60) * voice_xp)
+
+                    query[f'users.{user_id}.stats.xp'] = xp
 
                 # del cache.stats[guild_id]['members'][member_id]['messages_count']
 
