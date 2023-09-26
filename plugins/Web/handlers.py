@@ -229,7 +229,7 @@ class WebServerHandler:
             return Response(status=403)
 
         try:
-            member = await self.pyrogramBot.user.get_chat_member(chat, user)
+            member = await self.pyrogramBot.bot.get_chat_member(chat, user)
             # chat = await self.pyrogramBot.user.get_chat(chat)
             # user = await self.pyrogramBot.user.get_users(user)
 
@@ -328,7 +328,7 @@ class WebServerHandler:
             return Response(status=403)
 
         try:
-            user = await self.pyrogramBot.user.get_users(user)
+            user = await self.pyrogramBot.bot.get_users(user)
 
             date = datetime.now(tz=utc)
             date = date.strftime('%Y-%m-%d %H:%M:%S')
@@ -396,7 +396,7 @@ class WebServerHandler:
             return Response(status=403)
 
         try:
-            chat = await self.pyrogramBot.user.get_chat(chat)
+            chat = await self.pyrogramBot.bot.get_chat(chat)
 
             date = datetime.now(tz=utc)
             date = date.strftime('%Y-%m-%d %H:%M:%S')
@@ -412,7 +412,7 @@ class WebServerHandler:
         xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
         members_parameters = {}
-        async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
+        async for member in self.pyrogramBot.bot.get_chat_members(chat_id=chat.id):
             # Search only for userbots
             # query = ""
             # query_filter = MessagesFilter.EMPTY
@@ -575,9 +575,9 @@ class WebServerHandler:
             return Response(status=422)
 
         try:
-            member = await self.pyrogramBot.user.get_chat_member(chat, user)
-            chat = await self.pyrogramBot.user.get_chat(chat)
-            user = await self.pyrogramBot.user.get_users(user)
+            # member = await self.pyrogramBot.user.get_chat_member(chat, user)
+            chat = await self.pyrogramBot.bot.get_chat(chat)
+            user = await self.pyrogramBot.bot.get_users(user)
         except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
             return Response(status=422)
 
@@ -585,19 +585,19 @@ class WebServerHandler:
             # Demote chat member
             demote_rights = ChatPrivileges()
             demote_rights.can_manage_chat = False
-            await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=demote_rights)
+            await self.pyrogramBot.bot.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=demote_rights)
 
         if action == 'promote_chat_member':
             # Promote chat member to admin
             promote_rights = ChatPrivileges()
-            if await self.pyrogramBot.user.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=promote_rights):
+            if await self.pyrogramBot.bot.promote_chat_member(chat_id=chat.id, user_id=user.id, privileges=promote_rights):
                 for i in range(5):
                     try:
                         if parameters:
                             custom_title = parameters.get('custom_title', '')
 
                             if custom_title:
-                                if await self.pyrogramBot.user.set_administrator_title(chat_id=chat.id, user_id=user.id, title=custom_title):
+                                if await self.pyrogramBot.bot.set_administrator_title(chat_id=chat.id, user_id=user.id, title=custom_title):
                                     return Response()
                     except ValueError:
                         await asyncio.sleep(5)
