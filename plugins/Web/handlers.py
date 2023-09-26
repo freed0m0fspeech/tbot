@@ -471,8 +471,9 @@ class WebServerHandler:
                     # Not serializable
                     pass
 
+            member_parameters['user_parameters'] = user_parameters
+
             member_parameters['messages_count'] = messages_count
-            members_parameters['user_parameters'] = user_parameters
             # 'lvl': lvl,
             # 'xp_have': xp_have,
             # 'xp_need': xp_need,
