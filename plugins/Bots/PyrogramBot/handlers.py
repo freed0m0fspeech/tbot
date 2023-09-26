@@ -1133,12 +1133,13 @@ class PyrogramBotHandler:
 
             voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
-            query = ""
-            query_filter = MessagesFilter.EMPTY
+            # query = ""
+            # query_filter = MessagesFilter.EMPTY
 
             # Search only for userbots
-            messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id,
-                                                                               query=query, filter=query_filter)
+            # messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id, from_user=user.id,
+            #                                                                    query=query, filter=query_filter)
+            messages_count = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('messages_count', 0)
 
             user_mention = f"[@{user.username}](tg://user?id={user.id})"
             # date = datetime.timedelta(seconds=seconds)
@@ -1191,16 +1192,18 @@ class PyrogramBotHandler:
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
-            query = ""
-            query_filter = MessagesFilter.EMPTY
+            # query = ""
+            # query_filter = MessagesFilter.EMPTY
 
             stats = []
             async for member in self.pyrogramBot.user.get_chat_members(chat_id=chat.id):
-                messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id,
-                                                                                   from_user=member.user.id,
-                                                                                   query=query, filter=query_filter)
+                # messages_count = await self.pyrogramBot.user.search_messages_count(chat_id=chat.id,
+                #                                                                    from_user=member.user.id,
+                #                                                                    query=query, filter=query_filter)
 
                 user = member.user
+
+                messages_count = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('messages_count', 0)
                 voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
                 xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
