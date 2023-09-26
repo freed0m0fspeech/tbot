@@ -462,7 +462,17 @@ class WebServerHandler:
                     # Not serializable
                     pass
 
+            user_parameters = {}
+            for attr in [attr for attr in dir(member.user) if not attr.startswith('_')]:
+                try:
+                    value = getattr(member.user, attr)
+                    user_parameters[attr] = json.dumps(value, default=json_util.default)
+                except Exception as e:
+                    # Not serializable
+                    pass
+
             member_parameters['messages_count'] = messages_count
+            members_parameters['user_parameters'] = user_parameters
             # 'lvl': lvl,
             # 'xp_have': xp_have,
             # 'xp_need': xp_need,
