@@ -152,7 +152,8 @@ class PyrogramBotHandler:
 
         if 0 < duration < 61:
             try:
-                member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+                member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id,
+                                                                    user_id=message.from_user.id)
                 user = await self.pyrogramBot.bot.get_users(user_ids=username)
             except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
                 return
@@ -161,7 +162,8 @@ class PyrogramBotHandler:
                 await self.pyrogramBot.bot.restrict_chat_member(chat_id=message.chat.id,
                                                                 user_id=user.id,
                                                                 permissions=ChatPermissions(),
-                                                                until_date=datetime.datetime.now() + timedelta(minutes=duration))
+                                                                until_date=datetime.datetime.now() + timedelta(
+                                                                    minutes=duration))
                 # user_mention = f"[@{username}](tg://user?id={username.id})"
 
                 await message.delete()
@@ -172,7 +174,8 @@ class PyrogramBotHandler:
                                                                    on=_("on"),
                                                                    duration=duration,
                                                                    user=user.mention(f"@{user.username}"),
-                                                                   by_user=message.from_user.mention(f"@{message.from_user.username}"))
+                                                                   by_user=message.from_user.mention(
+                                                                       f"@{message.from_user.username}"))
                                                                )
             else:
                 return
@@ -183,7 +186,6 @@ class PyrogramBotHandler:
             #                                                text="✖️{text}".format(
             #                                                    text=_("Enter correct duration in minutes"))
             #                                                )
-
 
     # ------------------------------------------------------------------------------------------------------------------
     # Player -----------------------------------------------------------------------------------------------------------
@@ -605,10 +607,10 @@ class PyrogramBotHandler:
         if count == 0:
             query = {'media.queue': -1}
             if self.mongoDataBase.update_field(database_name='tbot',
-                                            collection_name='chats',
-                                            action='$unset',
-                                            filter={'chat_id': message.chat.id},
-                                            query=query) is None:
+                                               collection_name='chats',
+                                               action='$unset',
+                                               filter={'chat_id': message.chat.id},
+                                               query=query) is None:
                 print('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -619,10 +621,10 @@ class PyrogramBotHandler:
             query = {'media.queue': int(-1 * math.copysign(1, count))}
             for i in range(abs(count)):
                 if self.mongoDataBase.update_field(database_name='tbot',
-                                                collection_name='chats',
-                                                action='$pop',
-                                                filter={'chat_id': message.chat.id},
-                                                query=query) is None:
+                                                   collection_name='chats',
+                                                   action='$pop',
+                                                   filter={'chat_id': message.chat.id},
+                                                   query=query) is None:
                     print('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -673,7 +675,7 @@ class PyrogramBotHandler:
             query = {'media.queue': {'text': text, 'user': message.from_user.id}}
 
             if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$push',
-                                            filter={'chat_id': message.chat.id}, query=query) is None:
+                                               filter={'chat_id': message.chat.id}, query=query) is None:
                 print('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -717,7 +719,7 @@ class PyrogramBotHandler:
                 except (IndexError, KeyError):
                     query = {'media.now': 1}
                     if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$unset',
-                                                    filter={'chat_id': message.chat.id}, query=query) is None:
+                                                       filter={'chat_id': message.chat.id}, query=query) is None:
                         print('Something wrong with DataBase')
                     return
 
@@ -795,7 +797,7 @@ class PyrogramBotHandler:
                                        'user': now['user']}}
 
                 if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
-                                                filter=filter, query=query) is None:
+                                                   filter=filter, query=query) is None:
                     print('Something wrong with DataBase')
 
                 # print('start playing')
@@ -911,7 +913,7 @@ class PyrogramBotHandler:
             info = youtube_dl.get_info_media(title=text,
                                              ydl_opts=ydl_opts,
                                              search_engine=search_engine,
-                                             result_count=6)
+                                             result_count=1)
 
             results = []
 
@@ -932,6 +934,7 @@ class PyrogramBotHandler:
                     'duration': result.get('duration'),
                     'protocol': result.get('protocol')
                 }
+
                 message_text = f"/play {res['webpage_url']} {video} {sync}"
                 # print(f"{input_message_content}")
                 duration = f"({timedelta(seconds=int(res['duration']))})"
@@ -1121,7 +1124,8 @@ class PyrogramBotHandler:
                 return await self.pyrogramBot.bot.send_message(chat_id=chat.id,
                                                                text="✖️{text} {user_name}".format(
                                                                    text=_("No stats found about"),
-                                                                   user_name=user_name)
+                                                                   user_name=user_name),
+                                                               disable_notification=True
                                                                )
 
             query = {'_id': 0, f'users': 1, 'xp': 1}
@@ -1175,7 +1179,8 @@ class PyrogramBotHandler:
                     message_xp=message_xp,
                     xp_per_messaage_text=_("xp per message"),
                     voice_xp=voice_xp,
-                    xp_per_voice_second_text=_("xp per voice minute"))
+                    xp_per_voice_second_text=_("xp per voice minute")),
+                disable_notification=True
 
                 # text=f"{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n\n"
                 #     f"({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
@@ -1203,7 +1208,8 @@ class PyrogramBotHandler:
 
                 user = member.user
 
-                messages_count = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('messages_count', 0)
+                messages_count = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('messages_count',
+                                                                                                      0)
                 voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
                 xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
@@ -1369,7 +1375,9 @@ class PyrogramBotHandler:
             last_message = cache.stats[-1000000000000 - chat.id]['members'][user.id]['last_message']
             last_message_seconds = None
             if last_message:
-                last_message_seconds = (datetime.datetime.now(tz=pytz.utc).replace(tzinfo=None) - datetime.datetime.strptime(last_message, '%Y-%m-%d %H:%M:%S')).total_seconds()
+                last_message_seconds = (
+                            datetime.datetime.now(tz=pytz.utc).replace(tzinfo=None) - datetime.datetime.strptime(
+                        last_message, '%Y-%m-%d %H:%M:%S')).total_seconds()
 
             # Count messages only every 60 seconds
             if not last_message_seconds or last_message_seconds > 60:
@@ -1443,11 +1451,14 @@ class PyrogramBotHandler:
                     #                                        action='$inc', filter={'call_id': update.call.id},
                     #                                        query=query)
 
-                    tbot_document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats', filter={'call_id': update.call.id}, query={'_id': 0, 'chat_id': 1})
+                    tbot_document = self.mongoDataBase.get_document(database_name='tbot', collection_name='chats',
+                                                                    filter={'call_id': update.call.id},
+                                                                    query={'_id': 0, 'chat_id': 1})
                     chat_id = tbot_document.get('chat_id', '')
 
                     if chat_id:
-                        voicetime += cache.stats.get(chat_id, {}).get('members', {}).get(user.id, {}).get('voicetime', 0)
+                        voicetime += cache.stats.get(chat_id, {}).get('members', {}).get(user.id, {}).get('voicetime',
+                                                                                                          0)
                         cache.stats[chat_id]['members'][user.id]['voicetime'] = voicetime
 
         raise ContinuePropagation
