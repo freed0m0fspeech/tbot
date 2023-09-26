@@ -466,9 +466,9 @@ class WebServerHandler:
             # 'lvl': lvl,
             # 'xp_have': xp_have,
             # 'xp_need': xp_need,
-            member_parameters['xp']: xp
-            member_parameters['xp_factor']: xp_factor
-            member_parameters['voicetime']: voicetime
+            member_parameters['xp'] = xp
+            member_parameters['xp_factor'] = xp_factor
+            member_parameters['voicetime'] = voicetime
             member_parameters['date'] = date
 
             members_parameters[member.user.id] = member_parameters
