@@ -413,6 +413,8 @@ class WebServerHandler:
 
         members_parameters = {}
         async for member in self.pyrogramBot.bot.get_chat_members(chat_id=chat.id):
+            if member.user.is_bot:
+                continue
             # Search only for userbots
             # query = ""
             # query_filter = MessagesFilter.EMPTY
