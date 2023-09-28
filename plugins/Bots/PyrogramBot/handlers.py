@@ -1384,9 +1384,10 @@ class PyrogramBotHandler:
                 'messages_count', 0)
 
             cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
+            message_xp_delay = cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_delay', 60)
 
             # Count messages only every 60 seconds
-            if not last_message_seconds or last_message_seconds > 60:
+            if not last_message_seconds or last_message_seconds > message_xp_delay:
                 date = datetime.datetime.now(tz=pytz.utc)
                 date = date.strftime('%Y-%m-%d %H:%M:%S')
 

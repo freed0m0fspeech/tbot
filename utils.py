@@ -36,6 +36,14 @@ class Cache():
         # count of defaultdict - count inner dicts
         self.stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))))
 
+        query = {'_id': 0, 'xp': 1, 'chat_id': 1}
+        for chat in databases.mongodb_client.get_documents(database_name='tbot', collection_name='chats', query=query):
+            chat_xp = chat.get('xp', {})
+
+            self.stats[chat.get('chat_id', '')]['xp']['message_xp'] = chat_xp.get('message_xp', 100)
+            self.stats[chat.get('chat_id', '')]['xp']['voice_xp'] = chat_xp.get('voice_xp', 50)
+            self.stats[chat.get('chat_id', '')]['xp']['message_xp_delay'] = chat_xp.get('message_xp_delay', 60)
+
 
 dataBases = DataBases()
 cache = Cache(dataBases)
