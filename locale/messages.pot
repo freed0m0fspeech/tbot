@@ -209,6 +209,11 @@ msgstr ""
 msgid "xp per voice minute"
 msgstr ""
 
+#: plugins\Bots\PyrogramBot\handlers.py:1188
+#: plugins\Bots\PyrogramBot\handlers.py:1279
+msgid "seconds cooldown for message xp"
+msgstr ""
+
 #: plugins\Bots\PyrogramBot\handlers.py:1110
 msgid "Top members of"
 msgstr ""

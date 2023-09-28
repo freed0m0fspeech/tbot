@@ -225,6 +225,11 @@ msgstr "опыта за секунду в голосовом канале"
 msgid "xp per voice minute"
 msgstr "опыта за минуту в голосовом канале"
 
+#: plugins\Bots\PyrogramBot\handlers.py:1188
+#: plugins\Bots\PyrogramBot\handlers.py:1279
+msgid "seconds cooldown for message xp"
+msgstr "секунд задержки для получения опыта за сообщение"
+
 #: plugins\Bots\PyrogramBot\handlers.py:1110
 msgid "Top members of"
 msgstr "Топ участников"

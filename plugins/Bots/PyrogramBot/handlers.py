@@ -1150,8 +1150,10 @@ class PyrogramBotHandler:
             hours_in_voice_channel = round(voicetime / 3600, 1)
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
+            message_xp_delay = document.get('xp', {}).get('message_xp_delay', 60)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
+
 
             # xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
 
@@ -1167,8 +1169,8 @@ class PyrogramBotHandler:
 
             return await self.pyrogramBot.bot.send_message(
                 chat_id=chat.id,
-                text="{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}h\n\n"
-                     "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}".format(
+                text="{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} {voice_time_text}: {voice_time}h\n\n"
+                     "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}\n{message_xp_delay} {message_xp_delay_text}".format(
                     user_mention=user_mention,
                     lvl_text=_("lvl"),
                     lvl=lvl,
@@ -1181,7 +1183,10 @@ class PyrogramBotHandler:
                     message_xp=message_xp,
                     xp_per_messaage_text=_("xp per message"),
                     voice_xp=voice_xp,
-                    xp_per_voice_second_text=_("xp per voice minute")),
+                    xp_per_voice_second_text=_("xp per voice minute"),
+                    message_xp_delay=message_xp_delay,
+                    message_xp_delay_text=_("seconds cooldown for message xp"),
+                ),
                 disable_notification=True
 
                 # text=f"{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n\n"
@@ -1196,6 +1201,7 @@ class PyrogramBotHandler:
                 print('Something wrong with DataBase')
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
+            message_xp_delay = document.get('xp', {}).get('message_xp_delay', 60)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
@@ -1248,7 +1254,7 @@ class PyrogramBotHandler:
                 xp_have = int(xp - xp_for_level)
                 xp_need = (lvl + 1) * xp_factor
 
-                top_list = "{top_list}{i}.{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} | {voice_time_text}: {voice_time}h\n".format(
+                top_list = "{top_list}{i}.{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} {voice_time_text}: {voice_time}h\n".format(
                     top_list=top_list,
                     i=i,
                     user_mention=user_mention,
@@ -1263,12 +1269,15 @@ class PyrogramBotHandler:
 
                 # top_list = f"{top_list}{i}.{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n"
 
-            top_list = "{top_list}\n\n{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}".format(
+            top_list = "{top_list}\n\n{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}\n{message_xp_delay} {message_xp_delay_text}".format(
                 top_list=top_list,
                 message_xp=message_xp,
                 xp_per_messaage_text=_("xp per message"),
                 voice_xp=voice_xp,
-                xp_per_voice_second_text=_("xp per voice minute"))
+                xp_per_voice_second_text=_("xp per voice minute"),
+                message_xp_delay=message_xp_delay,
+                message_xp_delay_text=_("seconds cooldown for message xp"),
+            )
             # top_list = f"{top_list}\n\n({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
 
             return await self.pyrogramBot.bot.send_message(chat_id=chat.id, text=top_list, disable_notification=True)
