@@ -1153,7 +1153,9 @@ class PyrogramBotHandler:
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
-            xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+            # xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+
+            xp = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('xp', 0)
 
             lvl = 0.5 + math.sqrt(1 + 8 * (xp) / (xp_factor)) / 2
             lvl = int(lvl) - 1
@@ -1212,7 +1214,8 @@ class PyrogramBotHandler:
                                                                                                       0)
                 voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
-                xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+                # xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
+                xp = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('xp', 0)
                 stat = (user, messages_count, voicetime, xp)
                 stats.append(stat)
 
