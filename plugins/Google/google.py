@@ -48,8 +48,8 @@ class ScraperFactory:
 
     def genius_scraper(self):
         lyrics = self._genius_scraper_method_1() or self._genius_scraper_method_2()
-
-        self._update_title(self.title[:-16])
+        title = self.title.replace(' Lyrics - Genius', '').replace(' Lyrics', '')
+        self._update_title(title)
 
         return lyrics
 
@@ -147,24 +147,28 @@ class Google:
         try:
             session = HTMLSession()
             response = session.get(url=url)
+            # response = requests.get(url=url)
         except requests.exceptions.RequestException:
             return None
 
-        css_identifier_result = ".tF2Cxc"
+        css_identifier_result = ".Gx5Zad"
         css_identifier_title = "h3"
-        css_identifier_link = ".yuRUbf a"
-        #css_identifier_text = ".IsZvec"
+        css_identifier_link = ".egMi0 a"
+        # css_identifier_text = ".IsZvec"
 
         results = response.html.find(css_identifier_result)
 
         data = []
 
         for result in results:
-            item = {
-                'title': result.find(css_identifier_title, first=True).text,
-                'link': result.find(css_identifier_link, first=True).attrs['href'],
-                # 'text': result.find(css_identifier_text, first=True).text
-            }
+            try:
+                item = {
+                    'title': result.find(css_identifier_title, first=True).text,
+                    'link': result.find(css_identifier_link, first=True).attrs['href'].split('&url=', 1)[1].split('&', 1)[0],
+                    # 'text': result.find(css_identifier_text, first=True).text
+                }
+            except Exception:
+                continue
 
             data.append(item)
 

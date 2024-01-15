@@ -7,6 +7,7 @@ import os
 import textwrap
 from datetime import datetime
 
+import pyrogram.types
 import rsa
 
 from json import dumps, JSONDecodeError
@@ -184,17 +185,19 @@ class WebServerHandler:
 
     async def __send_message_handler(self, request: 'Request'):
         if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         chat = request.match_info['chat']
 
         try:
             data = await request.json()
         except JSONDecodeError:
-            return Response(status=500)
+            data = {}
 
         if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         text = data.get('text', '')
         pin = data.get('pin', '')
@@ -214,7 +217,8 @@ class WebServerHandler:
 
     async def __member_parameters_handler(self, request: 'Request'):
         if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         user = request.match_info['user']
         # chat_id = request.match_info['chat_id']
@@ -223,10 +227,11 @@ class WebServerHandler:
         try:
             data = await request.json()
         except JSONDecodeError:
-            return Response(status=500)
+            data = {}
 
         if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         try:
             member = await self.pyrogramBot.bot.get_chat_member(chat, user)
@@ -294,10 +299,15 @@ class WebServerHandler:
         for attr in [attr for attr in dir(member) if not attr.startswith('_')]:
             try:
                 value = getattr(member, attr)
+
                 member_parameters[attr] = json.dumps(value, default=json_util.default)
             except Exception as e:
                 # Not serializable
                 pass
+
+        # async for photo in self.pyrogramBot.bot.get_chat_photos(member.user.id):
+        #     print(photo.thumbs[1].file_id)
+        #     break
 
         member_parameters['date'] = date
 
@@ -315,17 +325,19 @@ class WebServerHandler:
 
     async def __user_parameters_handler(self, request: 'Request'):
         if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         user = request.match_info['user']
 
         try:
             data = await request.json()
         except JSONDecodeError:
-            return Response(status=500)
+            data = {}
 
         if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         try:
             user = await self.pyrogramBot.bot.get_users(user)
@@ -368,6 +380,7 @@ class WebServerHandler:
         for attr in [attr for attr in dir(user) if not attr.startswith('_')]:
             try:
                 value = getattr(user, attr)
+
                 user_parameters[attr] = json.dumps(value, default=json_util.default)
             except Exception as e:
                 # Not serializable
@@ -383,17 +396,19 @@ class WebServerHandler:
 
     async def __chat_parameters_handler(self, request: 'Request'):
         if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         chat = request.match_info['chat']
 
         try:
             data = await request.json()
         except JSONDecodeError:
-            return Response(status=500)
+            data = {}
 
         if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         try:
             chat = await self.pyrogramBot.bot.get_chat(chat)
@@ -460,6 +475,7 @@ class WebServerHandler:
             for attr in [attr for attr in dir(member) if not attr.startswith('_')]:
                 try:
                     value = getattr(member, attr)
+
                     member_parameters[attr] = json.dumps(value, default=json_util.default)
                 except Exception as e:
                     # Not serializable
@@ -469,6 +485,7 @@ class WebServerHandler:
             for attr in [attr for attr in dir(member.user) if not attr.startswith('_')]:
                 try:
                     value = getattr(member.user, attr)
+
                     user_parameters[attr] = json.dumps(value, default=json_util.default)
                 except Exception as e:
                     # Not serializable
@@ -542,6 +559,7 @@ class WebServerHandler:
         for attr in [attr for attr in dir(chat) if not attr.startswith('_')]:
             try:
                 value = getattr(chat, attr)
+
                 chat_parameters[attr] = json.dumps(value, default=json_util.default)
             except Exception as e:
                 # Not serializable
@@ -558,7 +576,8 @@ class WebServerHandler:
 
     async def __manage_chat_handler(self, request: 'Request'):
         if request.headers.get('Origin', '').split("//")[-1].split("/")[0].split('?')[0] not in ALLOWED_HOSTS:
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         user = request.match_info['user']
         chat = request.match_info['chat']
@@ -566,10 +585,11 @@ class WebServerHandler:
         try:
             data = await request.json()
         except JSONDecodeError:
-            return Response(status=500)
+            data = {}
 
         if not data.get('publicKey', '') == os.getenv('RSA_PUBLIC_KEY', ''):
-            return Response(status=403)
+            if not os.getenv('DEBUG', False):
+                return Response(status=403)
 
         action = data.get('action', '')
         parameters = data.get('parameters', '')
