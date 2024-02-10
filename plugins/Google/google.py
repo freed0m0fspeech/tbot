@@ -125,11 +125,11 @@ class Google:
     scraper_factory = ScraperFactory()
     SCRAPERS = {
         "genius": scraper_factory.genius_scraper,
-        #'glamsham': scraper_factory.glamsham_scraper,
-        #'lyricsbell': scraper_factory.lyricsbell_scraper,
-        #'lyricsted': scraper_factory.lyricsted_scraper,
-        #'lyricsoff': scraper_factory.lyricsoff_scraper,
-        #'lyricsmint': scraper_factory.lyricsmint_scraper,
+        # 'glamsham': scraper_factory.glamsham_scraper,
+        # 'lyricsbell': scraper_factory.lyricsbell_scraper,
+        # 'lyricsted': scraper_factory.lyricsted_scraper,
+        # 'lyricsoff': scraper_factory.lyricsoff_scraper,
+        # 'lyricsmint': scraper_factory.lyricsmint_scraper,
     }
 
     def __init__(self, api_key: str, engine_id: str):
@@ -140,12 +140,13 @@ class Google:
         title = urllib.parse.quote_plus(title)
         url = f"https://www.googleapis.com/customsearch/v1?key={self.__api_key}&cx={self.__engine_id}&q={title}"
         request_results = requests.get(url)
+
+        if request_results.status_code != 200:
+            return
+
         request_results = request_results.json()
 
         if len(request_results) == 0:
-            return
-
-        if request_results.status_code != 200:
             return
 
         results = request_results.get('items', {})
@@ -188,9 +189,9 @@ class Google:
 
         data = self.__handle_search_request(song_name)
 
-        #spell = data.get('spelling', {}).get('correctedQuery')
-        #data = (spell and self.__handle_search_request(spell)) or data
-        #query_results = data.get('items', [])
+        # spell = data.get('spelling', {}).get('correctedQuery')
+        # data = (spell and self.__handle_search_request(spell)) or data
+        # query_results = data.get('items', [])
         query_results = data
 
         # Try scraping lyrics from top results
