@@ -542,7 +542,7 @@ class PyrogramBotHandler:
 
         if text:
             # FIXME check if it returns error
-            lyrics = self.webServer.google.lyrics(song_name=text)
+            lyrics = self.webServer.google.lyrics(song_name=f"{text} lyrics")
         else:
             if not self.groupCall.client.is_audio_running and not self.groupCall.client.is_video_running:
                 return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
@@ -578,7 +578,7 @@ class PyrogramBotHandler:
                 'protocol': document.get('protocol'),
                 'user': document.get('user')
             }
-            lyrics = self.webServer.google.lyrics(song_name=now['title'])
+            lyrics = self.webServer.google.lyrics(song_name=f"{now['title']} lyrics")
 
         if not lyrics:
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
