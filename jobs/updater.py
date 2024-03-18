@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 from apscheduler.events import (
@@ -28,9 +29,11 @@ def listener(event):
     #     'traceback': None
     # }
     if event.exception:
-        print(f'The job {event.job_id}() crashed :(')
+        # print(f'The job {event.job_id}() crashed :(')
+        logging.warning(f'The job {event.job_id}() crashed :(')
     else:
-        print(f'The job {event.job_id}() executed successfully :)')
+        # print(f'The job {event.job_id}() executed successfully :)')
+        logging.info(f'The job {event.job_id}() executed successfully :)')
 
 
 job_defaults = {

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 
 from aiohttp.web import AppRunner, TCPSite
@@ -109,6 +110,8 @@ async def main():
     # Start scheduler
     if not os.getenv('DEBUG', '0').lower() in ['true', 't', '1']:
         start()
+
+    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.WARNING)
 
     await idle()
     await runner.cleanup()
