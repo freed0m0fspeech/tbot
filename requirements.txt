@@ -20,6 +20,6 @@ youtube_dl~=2021.12.17
 requests-html~=0.10.0
 python-dotenv==0.21.1
 rsa~=4.9
-yt_dlp~=2024.3.10
+yt-dlp
 pytz==2021.1
 APScheduler~=3.10.1
