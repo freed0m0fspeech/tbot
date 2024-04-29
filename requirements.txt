@@ -17,4 +17,3 @@ typing_extensions==4.11.0
 websockets==12.0
 yt_dlp
 tgcrypto~=1.2.3
-vosk==0.3.45
