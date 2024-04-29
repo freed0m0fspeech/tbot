@@ -48,7 +48,7 @@ class PyrogramBot:
         #                               *[command.command for command in self.bot_commands_users.commands]}
 
         self.MessageHandlerCommands = {'leave': 'group', 'start': 'private', 'skip': 'group', 'queue': 'group',
-                                       'speech_to_text': 'all', 'clear': 'group', 'play': 'group', 'join': 'group',
+                                       'text': 'all', 'clear': 'group', 'play': 'group', 'join': 'group',
                                        'now': 'group', 'pause': 'group', 'lyrics': 'all', 'help': 'all',
                                        'stats': 'group', 'language': 'all', 'mute': 'group'}
         self.CallbackQueryHandlerCommands = {'queue': 'group'}
@@ -88,7 +88,7 @@ class PyrogramBot:
                 # BotCommand(command='help', description="Help command"),
                 #BotCommand(command='echo', description="Echo any message (/echo [message])"),
                 BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
-                BotCommand(command='speech_to_text', description="Speech to text (reply to voice with /speech_to_text)"),
+                BotCommand(command='text', description="Speech to text (reply to media with /text)"),
             ]
         if not bot_commands_chats:
             bot_commands_chats = [
@@ -103,7 +103,7 @@ class PyrogramBot:
                                                        "(@sc@, @yt@, @video@, @sync@)"),
                 BotCommand(command='queue', description="Group queue media info (/queue [page])"),
                 BotCommand(command='skip', description="Skip playing media"),
-                BotCommand(command='speech_to_text', description="Speech to text (reply to voice with /speech_to_text)"),
+                BotCommand(command='text', description="Speech to text (reply to media with /text)"),
                 BotCommand(command='stats', description="Stats about you or some person in group (/stats [user])"),
                 #BotCommand(command='language', description="Change language of bot (/language [lang_code])"),
             ]
@@ -121,8 +121,8 @@ class PyrogramBot:
                                                        "(@sc@, @yt@, @video@, @sync@)"),
                 BotCommand(command='queue', description="Group queue media info (/queue [page])"),
                 BotCommand(command='skip', description="Skip playing media"),
-                BotCommand(command='speech_to_text',
-                           description="Speech to text (reply to voice with /speech_to_text)"),
+                BotCommand(command='text',
+                           description="Speech to text (reply to media with /text)"),
                 BotCommand(command='stats', description="Stats about you or some person in group (/stats [user])"),
             ]
 
@@ -142,8 +142,8 @@ class PyrogramBot:
             # BotCommand(command='help', description="Help команда"),
             # BotCommand(command='echo', description="Echo any message (/echo [message])"),
             BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
-            BotCommand(command='speech_to_text',
-                       description="Распознаниие речи в голосовом сообщении (переслать голосовое с /speech_to_text)"),
+            BotCommand(command='text',
+                       description="Распознаниие речи в медиа сообщении (ответить на медиа /text)"),
         ]
         bot_commands_chats = [
             # BotCommand(command='help', description="Help команда"),
@@ -157,8 +157,8 @@ class PyrogramBot:
                                                    "(@sc@, @yt@, @video@, @sync@)"),
             BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
             BotCommand(command='skip', description="Пропуск мультимедиа"),
-            BotCommand(command='speech_to_text',
-                       description="Распознаниие речи в голосовом сообщении (переслать голосовое с /speech_to_text)"),
+            BotCommand(command='text',
+                       description="Распознаниие речи в медиа сообщении (ответить на медиа /text)"),
             BotCommand(command='stats', description="Информация о участнике или топ группы (/stats [участник])"),
             # BotCommand(command='language', description="Change language of bot (/language [lang_code])"),
         ]
@@ -175,8 +175,8 @@ class PyrogramBot:
                                                    "(@sc@, @yt@, @video@, @sync@)"),
             BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
             BotCommand(command='skip', description="Пропуск мультимедиа"),
-            BotCommand(command='speech_to_text',
-                       description="Распознаниие речи в голосовом сообщении (переслать голосовое с /speech_to_text)"),
+            BotCommand(command='text',
+                       description="Распознаниие речи в медиа сообщении (ответить на медиа /text)"),
             BotCommand(command='stats', description="Информация о участнике или топ группы (/stats [участник])"),
         ]
 

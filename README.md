@@ -30,7 +30,7 @@ Commands:
   * /leave - Stop playing media and leave from voice group call
   * /join - Join group call
   * /lyrics [text] - Lyrics for currently playing media or by song title
-  * /speech_to_text - Speech to text voice message (reply to message with /speech_to_text comment)
+  * /text [language_code] - Speech to text (reply to message with /text)
   * /stats - Top members of group
   * /stats @member - Stats about you or some person in group
   * /stats random - Random message from group

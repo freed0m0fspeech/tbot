@@ -1,6 +1,8 @@
 import asyncio
 import datetime
 import gettext
+import io
+import logging
 import math
 import os
 import random
@@ -13,7 +15,7 @@ import yt_dlp
 from datetime import timedelta
 
 from pymongo import ReturnDocument
-from pyrogram.enums import MessagesFilter, ParseMode, ChatType, ChatMemberStatus
+from pyrogram.enums import MessagesFilter, ParseMode, ChatType, ChatMemberStatus, MessageMediaType
 from pyrogram.raw import types as raw_types
 from pyrogram.raw.functions import phone
 from pyrogram import types
@@ -195,7 +197,7 @@ class PyrogramBotHandler:
         volume = message.text.split(" ", maxsplit=1)[1]
 
         await self.groupCall.client.set_my_volume(volume=volume)
-        print(f'Volume set to {volume}')
+        logging.info(f'Volume set to {volume}')
 
     async def pause_command(self, client: Client, message: types.Message):
         if not self.groupCall.client.is_connected:
@@ -611,7 +613,7 @@ class PyrogramBotHandler:
                                                action='$unset',
                                                filter={'chat_id': message.chat.id},
                                                query=query) is None:
-                print('Something wrong with DataBase')
+                logging.warning('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{text}".format(text=_("Media queue cleared"))
@@ -625,7 +627,7 @@ class PyrogramBotHandler:
                                                    action='$pop',
                                                    filter={'chat_id': message.chat.id},
                                                    query=query) is None:
-                    print('Something wrong with DataBase')
+                    logging.warning('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{count} {tracks_cleared}".format(count=abs(count),
@@ -676,7 +678,7 @@ class PyrogramBotHandler:
 
             if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$push',
                                                filter={'chat_id': message.chat.id}, query=query) is None:
-                print('Something wrong with DataBase')
+                logging.warning('Something wrong with DataBase')
 
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✔️{text}".format(text=_("Successfully added to queue"))
@@ -720,7 +722,7 @@ class PyrogramBotHandler:
                     query = {'media.now': 1}
                     if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$unset',
                                                        filter={'chat_id': message.chat.id}, query=query) is None:
-                        print('Something wrong with DataBase')
+                        logging.warning('Something wrong with DataBase')
                     return
 
                 # queue = document['media']['queue']
@@ -798,7 +800,7 @@ class PyrogramBotHandler:
 
                 if self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
                                                    filter=filter, query=query) is None:
-                    print('Something wrong with DataBase')
+                    logging.warning('Something wrong with DataBase')
 
                 # print('start playing')
                 if info.get('ext') in self.groupCall.audio_formats:
@@ -974,91 +976,50 @@ class PyrogramBotHandler:
     # SPEECH RECOGNITION -----------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
 
-    async def speech_to_text_command(self, client: Client, message: types.Message):
+    async def text_command(self, client: Client, message: types.Message):
         try:
             language = message.text.split(" ", maxsplit=1)[1]
         except IndexError:
             language = 'ru-RU'
 
-        if not message.reply_to_message or not message.reply_to_message.voice:
+        if not message.reply_to_message or not message.reply_to_message.media or message.reply_to_message.media not in (MessageMediaType.VOICE, MessageMediaType.VIDEO, MessageMediaType.VIDEO_NOTE):
             return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                            text="✖️{text}".format(
                                                                text=_("Message does not contain voice message"))
                                                            )
 
-        file_id = message.reply_to_message.voice.file_id
-        source = await self.pyrogramBot.bot.download_media(message=file_id, file_name='downloads/')
-        converted_source = media_convertor.convert_audio_file(source)
-        os.remove(source)
-        recognizer = speech_recognition.Recognizer()
-        text = ''
+        reply_to_message = message.reply_to_message
+        media_type = message.reply_to_message.media
 
-        if message.reply_to_message.voice.duration < 60:
-            audio_file = speech_recognition.AudioFile(converted_source)
-
-            with audio_file as source:
-                audio_data = recognizer.record(source)
-
-            try:
-                text = recognizer.recognize_google(audio_data=audio_data, language=language)
-            except (speech_recognition.UnknownValueError,
-                    speech_recognition.RequestError,
-                    speech_recognition.WaitTimeoutError):
-                await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
-                                                        text="✖️{text}".format(text=_("Speech Recognition Error"))
-                                                        )
+        if media_type == MessageMediaType.VOICE:
+            media = reply_to_message.voice
+        elif media_type == MessageMediaType.VIDEO:
+            media = reply_to_message.video
         else:
-            # TODO long file recognition
-            text = 'Long voice audio recognition not yet supported.' \
-                   'You can only use < 60 sec voice audio recognition'
-            """
-            audio_segment = AudioSegment.from_wav(file=converted_source)
-            chunks = split_on_silence(audio_segment=audio_segment, min_silence_len=1000, silence_thresh=-16)
+            media = reply_to_message.video_note
 
-            i = 0
-            # process each chunk
-            for chunk in chunks:
-                # Create 0.5 seconds silence chunk
-                chunk_silent = AudioSegment.silent(duration=10)
+        file_path = ''
+        converted_file_path = ''
 
-                # add 0.5 sec silence to beginning and
-                # end of audio chunk. This is done so that
-                # it doesn't seem abruptly sliced.
-                audio_chunk = chunk_silent + chunk + chunk_silent
+        if media.duration < 60:
+            text = ''
+            try:
+                file_id = media.file_id
+                file_path = await self.pyrogramBot.bot.download_media(message=file_id)
+                converted_file_path = media_convertor.convert_audio_file(file_path)
+                recognizer = speech_recognition.Recognizer()
 
-                # specify the bitrate to be 192 k
-                audio_chunk.export("downloads/chunk{0}.wav".format(i), bitrate='192k', format="wav")
+                audio_file = speech_recognition.AudioFile(converted_file_path)
 
-                # the name of the newly created chunk
-                filename = 'downloads/chunk' + str(i) + '.wav'
+                with audio_file as source:
+                    audio_data = recognizer.record(source)
 
-                print("Processing chunk " + str(i))
-
-                # get the name of the newly created chunk
-                # in the AUDIO_FILE variable for later use.
-                file = filename
-
-                # recognize the chunk
-                with speech_recognition.AudioFile(file) as src:
-                    # remove this if it is not working
-                    # correctly.
-                    recognizer.adjust_for_ambient_noise(src)
-                    audio_listened = recognizer.listen(src)
-
-                try:
-                    # try converting it to text
-                    chunk_text = recognizer.recognize_google(audio_data=audio_listened, language=language)
-                    print(chunk_text)
-                    text = text + chunk_text
-                except (speech_recognition.UnknownValueError,
-                        speech_recognition.RequestError,
-                        speech_recognition.WaitTimeoutError):
-                    print('speech_recognition.Error')
-
-                i += 1
-            """
-
-        os.remove(converted_source)
+                    text = recognizer.recognize_google(audio_data=audio_data, language=language)
+                    # text = text[14:-3]
+            except Exception as e:
+                await self.pyrogramBot.bot.send_message(chat_id=message.chat.id, text="✖️{text}".format(text=_("Speech Recognition Error")))
+        else:
+            text = 'Speech to text доступен только для медиа длительностью не более 60 секунд'
 
         if text:
             if message.chat.type in (ChatType.GROUP, ChatType.SUPERGROUP, ChatType.CHANNEL):
@@ -1070,16 +1031,11 @@ class PyrogramBotHandler:
                 await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
                                                         text=f"{text}")
 
-        # https://cloud.google.com/speech-to-text/docs/languages
-        # recognize_bing()
-        # recognize_google()
-        # recognize_google_cloud()
-        # recognize_ibm()
-        # recognize_sphinx()
+        if file_path:
+            os.remove(file_path)
 
-    #
-    # XP check
-    #
+        if converted_file_path:
+            os.remove(converted_file_path)
 
     async def stats_command(self, client: Client, message: types.Message):
         # TODO add addition info and parameters
@@ -1133,7 +1089,7 @@ class PyrogramBotHandler:
                                                        filter={'chat_id': chat.id}, query=query)
 
             if not document:
-                print('Something wrong with DataBase')
+                logging.warning('Something wrong with DataBase')
 
             voicetime = document.get('users', {}).get(f'{user.id}', {}).get('stats', {}).get('voicetime', 0)
 
@@ -1198,7 +1154,7 @@ class PyrogramBotHandler:
                                                        filter={'chat_id': chat.id}, query=query)
 
             if not document:
-                print('Something wrong with DataBase')
+                logging.warning('Something wrong with DataBase')
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
             message_xp_delay = document.get('xp', {}).get('message_xp_delay', 60)

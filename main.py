@@ -110,8 +110,9 @@ async def main():
     # Start scheduler
     if not os.getenv('DEBUG', '0').lower() in ['true', 't', '1']:
         start()
-
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.WARNING)
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.WARNING)
+    else:
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
     await idle()
     await runner.cleanup()

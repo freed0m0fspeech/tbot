@@ -3,6 +3,7 @@ Web plugin to work with Web
 """
 import asyncio
 import gettext
+import logging
 
 from aiohttp import web
 from pyrogram.enums import MessagesFilter
@@ -81,20 +82,21 @@ class WebServer:
             try:
                 await self.pyrogramBot.user.start()
             except ConnectionError:
-                print('User connection error')
+                logging.warning('User connection error')
 
             try:
                 await self.pyrogramBot.bot.start()
             except FloodWait as e:
+                logging.warning(f'Bot start() FloodWait {e.value} seconds')
                 await asyncio.sleep(e.value)
                 await self.pyrogramBot.bot.start()
             except ConnectionError:
-                print('Bot connection error')
+                logging.warning('Bot connection error')
 
             await self.pyrogramBot.set_default_commands()
             await self.pyrogramBot.set_default_commands_ru()
 
-            session = await self.pyrogramBot.bot.export_session_string()
+            # session = await self.pyrogramBot.bot.export_session_string()
             # print(session)
 
         if self.twitch:
