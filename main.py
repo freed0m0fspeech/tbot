@@ -112,7 +112,7 @@ async def main():
         start()
         logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.WARNING)
     else:
-        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 
     await idle()
     await runner.cleanup()
