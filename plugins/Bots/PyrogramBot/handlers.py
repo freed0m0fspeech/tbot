@@ -1293,7 +1293,7 @@ class PyrogramBotHandler:
 
         # APRIL FOOLS --------------------------------------------------------------------------------------------------
         """
-        if isinstance(update, raw_types.UpdateNewChannelMessage):
+            if isinstance(update, raw_types.UpdateNewChannelMessage):
             update: raw_types.UpdateNewChannelMessage
             # self.pyrogramBot.bot: pyrogram.Client
 
@@ -1368,6 +1368,24 @@ class PyrogramBotHandler:
 
             # execute another commands
             # raise StopPropagation
+
+        if isinstance(update, raw_types.UpdateMessageReactions):
+            update: raw_types.UpdateMessageReactions
+
+            msg_id: int = update.msg_id
+            reactions: raw_types.MessageReactions = update.reactions
+            chat_id: int = -1000000000000 - update.peer.channel_id
+
+            message: types.Message = await self.pyrogramBot.bot.get_messages(chat_id=chat_id, message_ids=msg_id, replies=0)
+            user_id = message.from_user.id
+
+            reactions_count = 0
+            for result in reactions.results:
+                result: raw_types.ReactionCount
+
+                reactions_count += result.count
+
+            cache.stats[chat_id]['members'][user_id]['reactions_count'][msg_id] = reactions_count
 
         if isinstance(update, raw_types.update_group_call.UpdateGroupCall):
             update: raw_types.update_group_call.UpdateGroupCall

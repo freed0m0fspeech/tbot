@@ -412,11 +412,12 @@ class WebServerHandler:
                 return Response(status=403)
 
         try:
+            chat = int(chat)
             chat = await self.pyrogramBot.bot.get_chat(chat)
 
             date = datetime.now(tz=utc)
             date = date.strftime('%Y-%m-%d %H:%M:%S')
-        except (errors.ChatInvalid, errors.PeerIdInvalid):
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UsernameNotOccupied, ValueError):
             return Response(status=422)
 
         query = {'_id': 0, 'users': 1, 'xp': 1}
@@ -599,10 +600,11 @@ class WebServerHandler:
             return Response(status=422)
 
         try:
+            chat = int(chat)
             # member = await self.pyrogramBot.user.get_chat_member(chat, user)
             chat = await self.pyrogramBot.bot.get_chat(chat)
             user = await self.pyrogramBot.bot.get_users(user)
-        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant):
+        except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid, errors.UserNotParticipant, errors.UsernameNotOccupied, ValueError):
             return Response(status=422)
 
         if action == 'demote_chat_member':

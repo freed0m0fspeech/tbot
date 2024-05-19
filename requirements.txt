@@ -4,7 +4,7 @@ APScheduler==3.10.1
 beautifulsoup4==4.12.3
 pafy==0.5.5
 pymongo[srv]==4.6.3
-Pyrogram==2.0.99
+Pyrogram==2.0.106
 pytgcalls==3.0.0.dev24
 python-dotenv==1.0.1
 python-dateutil==2.8.2

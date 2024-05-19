@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 from pytz import utc
@@ -8,12 +9,15 @@ from utils import dataBases
 mongoDataBase = dataBases.mongodb_client
 
 
-def stats_sync(query=None, filter=None):
+def stats_sync(query=None, filter=None, action: str = None):
     from jobs.updater import sched
 
     if query and filter:
+        if action is None:
+            action = '$inc'
+
         mongoUpdate = mongoDataBase.update_field(database_name='tbot', collection_name='chats',
-                                                 action='$inc', filter=filter, query=query)
+                                                 action=action, filter=filter, query=query)
 
         if mongoUpdate is None:
             date = datetime.now(tz=utc) + timedelta(minutes=15)
@@ -26,6 +30,23 @@ def stats_sync(query=None, filter=None):
         return
 
     for chat_id in cache.stats.keys():
+        try:
+            query = {}
+            filter = {'chat_id': chat_id}
+            for msg_id, reaction_count in cache.stats.get(chat_id, {}).get('members', {}).get(user_id, {}).pop(
+                    'reactions_count').items():
+                query[f'users.{user_id}.stats.reactions_count.{msg_id}'] = reaction_count
+
+            mongoUpdate = mongoDataBase.update_field(database_name='tbot', collection_name='chats',
+                                                     action=action, filter=filter, query=query)
+
+            if mongoUpdate is None:
+                date = datetime.now(tz=utc) + timedelta(minutes=15)
+                date = date.strftime('%Y-%m-%d %H:%M:%S')
+                sched.get_job('stats_sync').modify(next_run_time=date, args=[query, filter, '$set'])
+        except Exception as e:
+            pass
+
         query = {'xp': 1}
         filter = {'chat_id': chat_id}
         document = mongoDataBase.get_document(database_name='tbot',

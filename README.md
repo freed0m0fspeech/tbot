@@ -49,7 +49,7 @@ Inline commands:
 Functionality:
 
   * Music player
-  * Stats (voicetime, messages count)
+  * Stats (voicetime, messages count, reactions count)
   * Scheduled tasks
   * DataBase
   * Multiple DataBases support
