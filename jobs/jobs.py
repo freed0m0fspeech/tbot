@@ -38,13 +38,14 @@ def stats_sync(query=None, filter=None, action: str = None):
                         'reactions_count').items():
                     query[f'users.{user_id}.stats.reactions_count.{msg_id}'] = reaction_count
 
-            mongoUpdate = mongoDataBase.update_field(database_name='tbot', collection_name='chats',
-                                                     action=action, filter=filter, query=query)
+            if query:
+                mongoUpdate = mongoDataBase.update_field(database_name='tbot', collection_name='chats',
+                                                         action='$set', filter=filter, query=query)
 
-            if mongoUpdate is None:
-                date = datetime.now(tz=utc) + timedelta(minutes=15)
-                date = date.strftime('%Y-%m-%d %H:%M:%S')
-                sched.get_job('stats_sync').modify(next_run_time=date, args=[query, filter, '$set'])
+                if mongoUpdate is None:
+                    date = datetime.now(tz=utc) + timedelta(minutes=15)
+                    date = date.strftime('%Y-%m-%d %H:%M:%S')
+                    sched.get_job('stats_sync').modify(next_run_time=date, args=[query, filter, '$set'])
         except Exception as e:
             logging.warning('Error updating reactions count in Database')
 
