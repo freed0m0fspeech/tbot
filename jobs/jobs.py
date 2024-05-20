@@ -35,11 +35,11 @@ def stats_sync(query=None, filter=None, action: str = None):
 
         for user_id in cache.stats.get(chat_id, {}).get('members', {}).keys():
             if cache.stats.get(chat_id, {}).get('members', {}).get(user_id, {}).get('reactions_count', {}):
-                for msg_id, reaction_count in cache.stats.get(chat_id, {}).get('members', {}).get(user_id, {}).pop(
-                        'reactions_count').items():
+                for msg_id, reaction_count in cache.stats.get(chat_id, {}).get('members', {}).get(user_id, {}).pop('reactions_count').items():
                     query[f'users.{user_id}.stats.reactions_count.{msg_id}'] = reaction_count
 
         if query:
+            print(query)
             mongoUpdate = mongoDataBase.update_field(database_name='tbot', collection_name='chats',
                                                      action='$set', filter=filter, query=query)
 

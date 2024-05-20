@@ -47,7 +47,7 @@ sched.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 
 
 def start():
-    sched.add_job(stats_sync, 'interval', hours=1, id='stats_sync',
+    sched.add_job(stats_sync, 'interval', minutes=1, id='stats_sync',
                   misfire_grace_time=None, coalesce=True)
 
     sched.start()
