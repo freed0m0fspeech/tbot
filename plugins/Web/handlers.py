@@ -441,7 +441,7 @@ class WebServerHandler:
             #                                                                    query=query, filter=query_filter)
 
             messages_count = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('messages_count', 0)
-            reactions_count = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('reactions_count', {})
+            # reactions_count = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('reactions_count', {})
             voicetime = document.get('users', {}).get(f'{member.user.id}', {}).get('stats', {}).get('voicetime', 0)
 
             # xp = (messages_count * message_xp) + ((voicetime // 60) * voice_xp)
@@ -497,7 +497,7 @@ class WebServerHandler:
             member_parameters['user_parameters'] = user_parameters
 
             member_parameters['messages_count'] = messages_count
-            member_parameters['reactions_count'] = reactions_count
+            # member_parameters['reactions_count'] = reactions_count
             # 'lvl': lvl,
             # 'xp_have': xp_have,
             # 'xp_need': xp_need,
