@@ -8,8 +8,7 @@ Pyrogram==2.0.106
 pytgcalls==3.0.0.dev24
 python-dotenv==1.0.1
 python-dateutil==2.8.2
-Requests==2.31.0
-requests-html==0.10.0
+Requests==2.32.0
 rsa==4.9
 setuptools==65.6.3
 SpeechRecognition==3.10.3
