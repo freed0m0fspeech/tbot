@@ -1,5 +1,5 @@
 aiogram==2.15
-aiohttp==3.10.5
+aiohttp==3.*.*
 APScheduler==3.10.1
 beautifulsoup4==4.12.3
 pafy==0.5.5
