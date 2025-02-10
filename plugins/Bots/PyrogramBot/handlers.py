@@ -155,11 +155,15 @@ class PyrogramBotHandler:
         if 0 < duration < 61:
             try:
                 member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+                user_member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=username)
                 user = await self.pyrogramBot.bot.get_users(user_ids=username)
             except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
                 return logging.warning('Invalid user')
 
             if member.custom_title.lower() == 'судья':
+                if user_member.custom_title:
+                    return logging.warning('You cannot mute administrator')
+
                 await self.pyrogramBot.bot.restrict_chat_member(chat_id=message.chat.id,
                                                                 user_id=user.id,
                                                                 permissions=ChatPermissions(),
@@ -179,9 +183,9 @@ class PyrogramBotHandler:
                                                                        f"@{message.from_user.username}"))
                                                                )
             else:
-                return
+                return logging.warning('Not judge')
         else:
-            return
+            return logging.warning('Invalid duration')
 
             # return await self.pyrogramBot.bot.send_message(chat_id=message.chat.id,
             #                                                text="✖️{text}".format(
