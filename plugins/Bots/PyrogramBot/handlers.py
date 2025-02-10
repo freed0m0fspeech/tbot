@@ -154,13 +154,13 @@ class PyrogramBotHandler:
 
         if 0 < duration < 61:
             try:
-                member = await self.pyrogramBot.user.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
-                user = await self.pyrogramBot.user.get_users(user_ids=username)
+                member = await self.pyrogramBot.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+                user = await self.pyrogramBot.bot.get_users(user_ids=username)
             except (errors.ChatInvalid, errors.PeerIdInvalid, errors.UserInvalid, errors.UsernameInvalid):
                 return logging.warning('Invalid user')
 
             if member.custom_title.lower() == 'судья':
-                await self.pyrogramBot.user.restrict_chat_member(chat_id=message.chat.id,
+                await self.pyrogramBot.bot.restrict_chat_member(chat_id=message.chat.id,
                                                                 user_id=user.id,
                                                                 permissions=ChatPermissions(),
                                                                 until_date=datetime.datetime.now() + timedelta(
