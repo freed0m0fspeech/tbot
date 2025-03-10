@@ -1,0 +1,19 @@
+aiogram==2.15
+aiohttp>=3.10.6,<4.0
+APScheduler==3.10.1
+beautifulsoup4==4.12.3
+pafy==0.5.5
+pymongo[srv]==4.6.3
+Pyrogram==2.0.106
+pytgcalls==3.0.0.dev24
+python-dotenv==1.0.1
+python-dateutil==2.8.2
+Requests==2.32.0
+rsa==4.9
+SpeechRecognition==3.10.3
+typing_extensions==4.11.0
+websockets==12.0
+yt_dlp
+tgcrypto~=1.2.3
+lxml==5.2.2
+# numpy==1.26.3
