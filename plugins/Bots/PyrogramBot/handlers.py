@@ -1368,7 +1368,7 @@ class PyrogramBotHandler:
             message: raw_types.Message = update.message
             # content = message.message
             if isinstance(message.media, raw_types.message_media_dice.MessageMediaDice):
-                return
+                raise ContinuePropagation
 
             # If sended messages more than limit don't count as xp
             if messages_count <= cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_limit', 60):
@@ -1424,17 +1424,21 @@ class PyrogramBotHandler:
                 if version == 1:
                     query = {f'call_id': update.call.id}
 
-                    return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
-                                                           filter={'chat_id': -1000000000000 - update.chat_id},
-                                                           query=query)
+                    self.mongoDataBase.update_field(database_name='tbot', collection_name='chats', action='$set',
+                                                    filter={'chat_id': -1000000000000 - update.chat_id},
+                                                    query=query)
+
+                    raise ContinuePropagation
             except AttributeError:
                 # Group call ended
                 query = {f'call_id': 1}
 
-                return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
-                                                       action='$unset',
-                                                       filter={'chat_id': -1000000000000 - update.chat_id},
-                                                       query=query)
+                self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
+                                                action='$unset',
+                                                filter={'chat_id': -1000000000000 - update.chat_id},
+                                                query=query)
+
+                raise ContinuePropagation
 
                 # query = {f'call_id': update.call.id}
                 # return self.mongoDataBase.update_field(database_name='tbot', collection_name='chats',
