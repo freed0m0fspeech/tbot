@@ -1110,6 +1110,7 @@ class PyrogramBotHandler:
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
             message_xp_delay = document.get('xp', {}).get('message_xp_delay', 60)
+            message_xp_limit = document.get('xp', {}).get('message_xp_limit', 60)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
@@ -1129,7 +1130,8 @@ class PyrogramBotHandler:
             return await self.pyrogramBot.bot.send_message(
                 chat_id=chat.id,
                 text="{user_mention} {lvl_text}: {lvl} {xp_text}: {xp}\n{messages_text}: {messages_count} {voice_time_text}: {voice_time}h\n\n"
-                     "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}\n{message_xp_delay} {message_xp_delay_text}".format(
+                     "{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}\n{message_xp_delay} {message_xp_delay_text}\n"
+                     "{message_xp_limit} {message_xp_limit_text}".format(
                     user_mention=user_mention,
                     lvl_text=_("lvl"),
                     lvl=lvl,
@@ -1145,6 +1147,8 @@ class PyrogramBotHandler:
                     xp_per_voice_second_text=_("xp per voice minute"),
                     message_xp_delay=message_xp_delay,
                     message_xp_delay_text=_("seconds cooldown for message xp"),
+                    message_xp_limit=message_xp_limit,
+                    message_xp_limit_text=_("xp messages limit per hour")
                 ),
                 disable_notification=True
 
@@ -1161,6 +1165,7 @@ class PyrogramBotHandler:
 
             message_xp = document.get('xp', {}).get('message_xp', 100)
             message_xp_delay = document.get('xp', {}).get('message_xp_delay', 60)
+            message_xp_limit = document.get('xp', {}).get('message_xp_limit', 60)
             voice_xp = document.get('xp', {}).get('voice_xp', 50)
             xp_factor = document.get('xp', {}).get('xp_factor', 100)  # threshold
 
@@ -1228,7 +1233,8 @@ class PyrogramBotHandler:
 
                 # top_list = f"{top_list}{i}.{user_mention} {_('xp')}: {round(xp)} {_('messages')}: {messages_count} {_('voice time')}: {date}\n"
 
-            top_list = "{top_list}\n\n{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}\n{message_xp_delay} {message_xp_delay_text}".format(
+            top_list = "{top_list}\n\n{message_xp} {xp_per_messaage_text}\n{voice_xp} {xp_per_voice_second_text}\n{message_xp_delay} {message_xp_delay_text}\n" \
+                       "{message_xp_limit} {message_xp_limit_text}".format(
                 top_list=top_list,
                 message_xp=message_xp,
                 xp_per_messaage_text=_("xp per message"),
@@ -1236,6 +1242,8 @@ class PyrogramBotHandler:
                 xp_per_voice_second_text=_("xp per voice minute"),
                 message_xp_delay=message_xp_delay,
                 message_xp_delay_text=_("seconds cooldown for message xp"),
+                message_xp_limit=message_xp_limit,
+                message_xp_limit_text=_("xp messages limit per hour")
             )
             # top_list = f"{top_list}\n\n({message_xp}{_('xp per message')} | {voice_xp} {_('xp per voice second')})"
 
