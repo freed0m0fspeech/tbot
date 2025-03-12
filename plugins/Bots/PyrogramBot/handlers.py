@@ -1341,9 +1341,6 @@ class PyrogramBotHandler:
         if isinstance(update, raw_types.update_new_channel_message.UpdateNewChannelMessage):
             update: raw_types.update_new_channel_message.UpdateNewChannelMessage
 
-            # message: raw_types.Message = update.message
-            # content = message.message
-
             user = list(users.items())[0][1]
             chat = list(chats.items())[0][1]
 
@@ -1367,6 +1364,11 @@ class PyrogramBotHandler:
 
             cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
             message_xp_delay = cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_delay', 60)
+
+            message: raw_types.Message = update.message
+            # content = message.message
+            if isinstance(message.media, raw_types.message_media_dice.MessageMediaDice):
+                return
 
             # If sended messages more than limit don't count as xp
             if messages_count <= cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_limit', 60):
