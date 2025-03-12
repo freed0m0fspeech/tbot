@@ -1333,6 +1333,9 @@ class PyrogramBotHandler:
         if isinstance(update, raw_types.update_new_channel_message.UpdateNewChannelMessage):
             update: raw_types.update_new_channel_message.UpdateNewChannelMessage
 
+            # message: raw_types.Message = update.message
+            # content = message.message
+
             user = list(users.items())[0][1]
             chat = list(chats.items())[0][1]
 
@@ -1357,17 +1360,19 @@ class PyrogramBotHandler:
             cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count'] = messages_count
             message_xp_delay = cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_delay', 60)
 
-            # Count messages only every 60 seconds
-            if not last_message_seconds or last_message_seconds > message_xp_delay:
-                date = datetime.datetime.now(tz=pytz.utc)
-                date = date.strftime('%Y-%m-%d %H:%M:%S')
+            # If sended messages more than limit don't count as xp
+            if messages_count <= cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_limit', 60):
+                # Count messages only every 60 seconds
+                if not last_message_seconds or last_message_seconds > message_xp_delay:
+                    date = datetime.datetime.now(tz=pytz.utc)
+                    date = date.strftime('%Y-%m-%d %H:%M:%S')
 
-                messages_count_xp = 1
-                messages_count_xp += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
-                    'messages_count_xp', 0)
+                    messages_count_xp = 1
+                    messages_count_xp += cache.stats.get(-1000000000000 - chat.id, {}).get('members', {}).get(user.id, {}).get(
+                        'messages_count_xp', 0)
 
-                cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count_xp'] = messages_count_xp
-                cache.stats[-1000000000000 - chat.id]['members'][user.id]['last_message'] = date
+                    cache.stats[-1000000000000 - chat.id]['members'][user.id]['messages_count_xp'] = messages_count_xp
+                    cache.stats[-1000000000000 - chat.id]['members'][user.id]['last_message'] = date
 
             # execute another commands
             # raise StopPropagation
