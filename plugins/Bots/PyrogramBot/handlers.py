@@ -1371,7 +1371,7 @@ class PyrogramBotHandler:
                 raise ContinuePropagation
 
             # If sended messages more than limit don't count as xp
-            if messages_count <= cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('message_xp_limit', 60):
+            if messages_count <= cache.stats.get(-1000000000000 - chat.id, {}).get('xp', {}).get('messages_xp_limit', 60):
                 # Count messages only every 60 seconds
                 if not last_message_seconds or last_message_seconds > message_xp_delay:
                     date = datetime.datetime.now(tz=pytz.utc)
