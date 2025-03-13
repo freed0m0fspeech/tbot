@@ -59,6 +59,7 @@ def stats_sync(query=None, filter=None, action: str = None):
         cache.stats[chat_id]['xp']['message_xp'] = chat_xp.get('message_xp', 100)
         cache.stats[chat_id]['xp']['voice_xp'] = chat_xp.get('voice_xp', 50)
         cache.stats[chat_id]['xp']['message_xp_delay'] = chat_xp.get('message_xp_delay', 60)
+        cache.stats[chat_id]['xp']['messages_xp_limit'] = chat_xp.get('messages_xp_limit', 60)
 
         query = {}
 
