@@ -38,7 +38,7 @@ class PyrogramBotHandler:
     def __init__(self, webSerber, pyrogramBot: PyrogramBot, mongoDataBase: MongoDataBase):
         self.webServer = webSerber
         self.pyrogramBot = pyrogramBot
-        self.groupCall = pyrogramBot.groupCall
+        # self.groupCall = pyrogramBot.groupCall
         self.mongoDataBase = mongoDataBase
         # Cached chats
         # self.chats = {}

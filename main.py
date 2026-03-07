@@ -67,7 +67,8 @@ async def main():
     twitch = None
     event_sub = None
 
-    google = Google(api_key=GOOGLE_API_KEY, engine_id=GOOGLE_ENGINE_ID)
+    # google = Google(api_key=GOOGLE_API_KEY, engine_id=GOOGLE_ENGINE_ID)
+    google = None
 
     # await pyrogramBot.client.start()
     # '[This is an example](https://example.com)'

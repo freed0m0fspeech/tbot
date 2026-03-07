@@ -41,18 +41,23 @@ class PyrogramBot:
 
         # TODO user session authorization to :memory:
 
-        self.groupCall = GroupCall(self)
+        # self.groupCall = GroupCall(self)
 
         #self.MessageHandlerCommands = {*[command.command for command in self.bot_commands_default.commands],
         #                               *[command.command for command in self.bot_commands_chats.commands],
         #                               *[command.command for command in self.bot_commands_users.commands]}
 
-        self.MessageHandlerCommands = {'leave': 'group', 'start': 'private', 'skip': 'group', 'queue': 'group',
-                                       'text': 'all', 'clear': 'group', 'play': 'group', 'join': 'group',
-                                       'now': 'group', 'pause': 'group', 'lyrics': 'all', 'help': 'all',
-                                       'stats': 'group', 'language': 'all', 'mute': 'group'}
-        self.CallbackQueryHandlerCommands = {'queue': 'group'}
-        self.InlineQueryHandlerCommands = {'play': 'group'}
+        self.MessageHandlerCommands = {
+            'start': 'private',
+            'text': 'all', 'help': 'all', 'language': 'all',
+            'stats': 'group', 'mute': 'group',
+        }
+        self.CallbackQueryHandlerCommands = {
+            # 'queue': 'group'
+        }
+        self.InlineQueryHandlerCommands = {
+            # 'play': 'group'
+        }
 
     async def __get_bot_session(self, bot_token=Optional[str], api_id=Union[int, str, None], api_hash=Optional[str],
                                               session_name=':memory:'):
@@ -87,22 +92,22 @@ class PyrogramBot:
                 # BotCommand(command='start', description="Start command"),
                 # BotCommand(command='help', description="Help command"),
                 #BotCommand(command='echo', description="Echo any message (/echo [message])"),
-                BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
+                # BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
                 BotCommand(command='text', description="Speech to text (reply to media with /text)"),
             ]
         if not bot_commands_chats:
             bot_commands_chats = [
                 # BotCommand(command='help', description="Help command"),
-                BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
-                BotCommand(command='join', description="Join group call"),
-                BotCommand(command='leave', description="Stop playing media"),
-                BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
-                BotCommand(command='now', description="Now playing media info"),
-                BotCommand(command='pause', description="Pause/Resume media"),
-                BotCommand(command='play', description="Play media by url or text (/play [url/text]) "
-                                                       "(@sc@, @yt@, @video@, @sync@)"),
-                BotCommand(command='queue', description="Group queue media info (/queue [page])"),
-                BotCommand(command='skip', description="Skip playing media"),
+                # BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
+                # BotCommand(command='join', description="Join group call"),
+                # BotCommand(command='leave', description="Stop playing media"),
+                # BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
+                # BotCommand(command='now', description="Now playing media info"),
+                # BotCommand(command='pause', description="Pause/Resume media"),
+                # BotCommand(command='play', description="Play media by url or text (/play [url/text]) "
+                #                 #                                        "(@sc@, @yt@, @video@, @sync@)"),
+                # BotCommand(command='queue', description="Group queue media info (/queue [page])"),
+                # BotCommand(command='skip', description="Skip playing media"),
                 BotCommand(command='text', description="Speech to text (reply to media with /text)"),
                 BotCommand(command='stats', description="Stats about you or some person in group (/stats [user])"),
                 #BotCommand(command='language', description="Change language of bot (/language [lang_code])"),
@@ -110,17 +115,17 @@ class PyrogramBot:
 
         if not bot_commands_chats_admins:
             bot_commands_chats_admins = [
-                BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
-                BotCommand(command='join', description="Join group call"),
-                BotCommand(command='leave', description="Stop playing media"),
-                BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
+                # BotCommand(command='clear', description="Clear queue (/clear [count/-count/0])"),
+                # BotCommand(command='join', description="Join group call"),
+                # BotCommand(command='leave', description="Stop playing media"),
+                # BotCommand(command='lyrics', description='Lyrics for current playing audio or song title'),
                 BotCommand(command='mute', description="Mute someone in group (/mute [user] [duratuin])"),
-                BotCommand(command='now', description="Now playing media info"),
-                BotCommand(command='pause', description="Pause/Resume media"),
-                BotCommand(command='play', description="Play media by url or text (/play [url/text]) "
-                                                       "(@sc@, @yt@, @video@, @sync@)"),
-                BotCommand(command='queue', description="Group queue media info (/queue [page])"),
-                BotCommand(command='skip', description="Skip playing media"),
+                # BotCommand(command='now', description="Now playing media info"),
+                # BotCommand(command='pause', description="Pause/Resume media"),
+                # BotCommand(command='play', description="Play media by url or text (/play [url/text]) "
+                #                                        "(@sc@, @yt@, @video@, @sync@)"),
+                # BotCommand(command='queue', description="Group queue media info (/queue [page])"),
+                # BotCommand(command='skip', description="Skip playing media"),
                 BotCommand(command='text',
                            description="Speech to text (reply to media with /text)"),
                 BotCommand(command='stats', description="Stats about you or some person in group (/stats [user])"),
@@ -141,22 +146,22 @@ class PyrogramBot:
             # BotCommand(command='start', description="Start команда"),
             # BotCommand(command='help', description="Help команда"),
             # BotCommand(command='echo', description="Echo any message (/echo [message])"),
-            BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
+            # BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
             BotCommand(command='text',
                        description="Распознаниие речи в медиа сообщении (ответить на медиа /text)"),
         ]
         bot_commands_chats = [
             # BotCommand(command='help', description="Help команда"),
-            BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
-            BotCommand(command='join', description="Присойденится к голосовому каналу"),
-            BotCommand(command='leave', description="Покинуть голосовой канал"),
-            BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
-            BotCommand(command='now', description="Информация о текущем мультимедиа"),
-            BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
-            BotCommand(command='play', description="Добавить в очередь мультимедиа (/play [url/название]) "
-                                                   "(@sc@, @yt@, @video@, @sync@)"),
-            BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
-            BotCommand(command='skip', description="Пропуск мультимедиа"),
+            # BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
+            # BotCommand(command='join', description="Присойденится к голосовому каналу"),
+            # BotCommand(command='leave', description="Покинуть голосовой канал"),
+            # BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
+            # BotCommand(command='now', description="Информация о текущем мультимедиа"),
+            # BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
+            # BotCommand(command='play', description="Добавить в очередь мультимедиа (/play [url/название]) "
+            #                                        "(@sc@, @yt@, @video@, @sync@)"),
+            # BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
+            # BotCommand(command='skip', description="Пропуск мультимедиа"),
             BotCommand(command='text',
                        description="Распознаниие речи в медиа сообщении (ответить на медиа /text)"),
             BotCommand(command='stats', description="Информация о участнике или топ группы (/stats [участник])"),
@@ -164,17 +169,17 @@ class PyrogramBot:
         ]
 
         bot_commands_chats_admins = [
-            BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
-            BotCommand(command='join', description="Присойденится к голосовому каналу"),
-            BotCommand(command='leave', description="Покинуть голосовой канал"),
-            BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
+            # BotCommand(command='clear', description="Очисить очередь (/clear [количество/-количество/0])"),
+            # BotCommand(command='join', description="Присойденится к голосовому каналу"),
+            # BotCommand(command='leave', description="Покинуть голосовой канал"),
+            # BotCommand(command='lyrics', description='Слова песни для текущей песни или названия (/lyrics [название])'),
             BotCommand(command='mute', description="Выдать мут участнику группы (/mute [участник] [длительность])"),
-            BotCommand(command='now', description="Информация о текущем мультимедиа"),
-            BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
-            BotCommand(command='play', description="Добавить в очередь мультимедиа (/play [url/название]) "
-                                                   "(@sc@, @yt@, @video@, @sync@)"),
-            BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
-            BotCommand(command='skip', description="Пропуск мультимедиа"),
+            # BotCommand(command='now', description="Информация о текущем мультимедиа"),
+            # BotCommand(command='pause', description="Приостановить/Возобновить мультимедиа"),
+            # BotCommand(command='play', description="Добавить в очередь мультимедиа (/play [url/название]) "
+            #                                        "(@sc@, @yt@, @video@, @sync@)"),
+            # BotCommand(command='queue', description="Очередь мультимедиа (/queue [станица])"),
+            # BotCommand(command='skip', description="Пропуск мультимедиа"),
             BotCommand(command='text',
                        description="Распознаниие речи в медиа сообщении (ответить на медиа /text)"),
             BotCommand(command='stats', description="Информация о участнике или топ группы (/stats [участник])"),
